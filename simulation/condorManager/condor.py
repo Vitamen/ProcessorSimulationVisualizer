@@ -1,6 +1,5 @@
-import logging
-import subprocess
-import ntpath
+import logging, subprocess, os ,ntpath, re, CondorDaemon
+
 '''
 Provides the interface for talking to Condor cluster.
 
@@ -24,6 +23,7 @@ class Manager:
         report to error logger
     '''
     def __init__(self):
+        self.daemonMap = {}
         retVal = Manager.__callCondor(self, "condor", "-version")
         if retVal == False:
             logging.error("Condor is not installed on curren computer." +
@@ -35,14 +35,36 @@ class Manager:
     '''
         Submit job to condor using the file specified by the ABSOLUTE path
         
-        @param The location of the submission file to send to condor
+        @param The location of the submission file to send to condor.
+               The submission file must specify a log location
+        @param The callback to callback with information about changes to condor
         @return True if the submission is successful. False otherwise
     '''
-    def startJob(self,path):
-        retVal = Manager.__callCondor(self, "condor_submit", path)
-        if retVal == True :
-            self.isRunnng = True 
-        return retVal
+    def startJob(self,path, callback):
+        
+        #Check that the file specified by path exists
+        absname = ntpath.abspath(path)
+        try :
+            os.stat(absname)
+        except : 
+            logging.error("The path specified does not exist")
+            raise
+        
+        #Extract log file position for CondorDaemon
+        condorSub = open(path, "r").read()
+        lineFound = re.search("^[Ll]og[ \t]*=.+", condorSub, re.MULTILINE)
+        if lineFound :
+            logFile = re.split("=[ \t]*", lineFound.group(0))
+        if not logFile :
+            logging.error("The submission file did not specify a log location")
+            raise
+        
+        #Spawn CondorDaemon process to keep track of condor submission
+        #Store this in a map
+        m = CondorDaemon.CondorDaemon(logFile, callback).start()
+        self.daemonMap[path] = m
+        
+        return Manager.__callCondor(self, "condor_submit", path)
          
     #=================================================================#
     
