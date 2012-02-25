@@ -6,18 +6,20 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
-import condor
+import CondorManager
 
 class SimpleTest(TestCase):
-    def test_condor(self):
+    
+    def setUp(self):
         """
         Tests that condor exists on the machine
         """
-        self.assert_(condor.Manager())
-        
-        """
-        Test starting and stopping jobs
-        """
-        x= condor.Manager()
-        self.assertTrue(x.startJob("/home/songdet/Documents/condor.sub"))
-        self.assertTrue(x.stopJob("26.0"))
+        self.assert_(CondorManager.Manager())
+        self.x = CondorManager.Manager()
+       
+    
+    def testcallCondor(self):
+        self.assertTrue(self.x.callCondor(self,["condor_submit", "-verbose", "/home/songdet/Documents/condor.sub"],
+                                          filePath="/home/songdet/Documents/"))
+        self.assertTrue(self.x.callCondor(self, ["condor_rm", "-all"]))
+    

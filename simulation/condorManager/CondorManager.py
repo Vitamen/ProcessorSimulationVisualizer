@@ -1,4 +1,5 @@
 import logging, subprocess, os ,ntpath, re, CondorDaemon
+from models import CondorSubmission, CondorJob
 
 '''
 Provides the interface for talking to Condor cluster.
@@ -24,9 +25,9 @@ class Manager:
     '''
     def __init__(self):
         self.daemonMap = {}
-        retVal = Manager.__callCondor(self, "condor", "-version")
+        retVal = Manager.callCondor(self, ["condor", "-version"])
         if retVal == False:
-            logging.error("Condor is not installed on curren computer." +
+            logging.error("Condor is not installed on current computer." +
                           " Please visit http://research.cs.wisc.edu/condor/")
     
     
@@ -37,12 +38,11 @@ class Manager:
         
         @param The location of the submission file to send to condor.
                The submission file must specify a log location
-        @param The callback to callback with information about changes to condor
-        @return True if the submission is successful. False otherwise
+        @return The CondorDaemon started by the process. False otherwise
     '''
-    def startJob(self,path, callback):
+    def startJob(self,path):
         
-        #Check that the file specified by path exists
+        #Check that the file specified by path exists.
         absname = ntpath.abspath(path)
         try :
             os.stat(absname)
@@ -50,21 +50,31 @@ class Manager:
             logging.error("The path specified does not exist")
             raise
         
-        #Extract log file position for CondorDaemon
+        #Extract log file name for CondorDaemon
         condorSub = open(path, "r").read()
         lineFound = re.search("^[Ll]og[ \t]*=.+", condorSub, re.MULTILINE)
         if lineFound :
-            logFile = re.split("=[ \t]*", lineFound.group(0))
+            logFile = re.split("=[ \t]*", lineFound.group(0))[1]
         if not logFile :
             logging.error("The submission file did not specify a log location")
             raise
         
-        #Spawn CondorDaemon process to keep track of condor submission
-        #Store this in a map
-        m = CondorDaemon.CondorDaemon(logFile, callback).start()
-        self.daemonMap[path] = m
+        #Submit to condor & return if false
+        retVal = Manager.callCondor(self, ["condor_submit", "-verbose", absname])
+        if retVal == False:
+            return False
         
-        return Manager.__callCondor(self, "condor_submit", path)
+        #Spawn CondorDaemon process to keep track of condor submission
+        #Store this in a map. If the map already contain this, stop previous
+        #job and run again
+        try:
+            m = self.daemonMap[path]
+            m.stop()
+        except KeyError:
+            pass
+        m = CondorDaemon.CondorDaemon(logFile,retVal).start()
+        self.daemonMap[path] = m
+        return m
          
     #=================================================================#
     
@@ -75,7 +85,7 @@ class Manager:
         @return True if cancellation is successful. False otherwise
     '''
     def stopJob(self,condorid):
-        return Manager.__callCondor(self, "condor_rm", condorid)
+        return Manager.callCondor(self, "condor_rm", condorid)
         
     #=================================================================#
     
@@ -86,32 +96,42 @@ class Manager:
         @return True if cancellation is successful. False otherwise
     '''
     def stopJobAll(self,user):
-        return Manager.__callCondor(self, "condor_rm", user)
+        return Manager.callCondor(self, "condor_rm", user)
         
     
     #=================================================================#
-    
+
     '''
         Helper method for calling condor commands and getting results back
-        @param The command to call condor
-        @param The input to command line
-        @return True if call return exit code 0. False otherwise
+        @param The command and arguments to call condor with
+        @param Change to filePath and execute command from there if not false
+        @return Output value if ran successfully, false otherwise
     '''
     @staticmethod
-    def __callCondor(self, command, inputVal):
+    def callCondor(self, command, filePath=False):
         try:
             
-            #Change to where file is if inputval is a file
+            #Change to where file is if filePath is given
             #This is to mimic user's command line behavior
-            if ntpath.isfile(inputVal):
-                path = ntpath.split(inputVal)
-                subprocess.check_output([command,inputVal], cwd=path[0])
+            if filePath:
+                path = ntpath.split(filePath)
+                output = subprocess.check_output(command, cwd=path[0])
             else:
-                subprocess.check_output([command,inputVal])
-            return True;
+                output = subprocess.check_output(command)
+            return output
         except subprocess.CalledProcessError, e:
             logging.error(str(e))
             return False
     
     #=================================================================#
+    
+    '''
+        Helper method that uses retVal to create and store condor submissions
+        and condor jobs
+        @param the value use to create model
+        @return the CondorSubmission model that contains information about condor
+                jobs
+    '''
+    def getModels(self,retVal):
+        return False
             

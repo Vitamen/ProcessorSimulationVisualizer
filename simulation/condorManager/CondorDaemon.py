@@ -3,7 +3,8 @@ from Daemon import Daemon
 
 '''
 A daemon that monitors condor log file in the background
-and notify observer when the log gets updated
+and notify observer when the log gets updated. (Uses listener
+pattern. The listener must have method notify() implemented
 
 @author: Songdet
 '''
@@ -14,11 +15,13 @@ class CondorDaemon(Daemon):
         is callable. If either of this is not satisfied, error is raised
         
         @param The name of the log file that the daemon should track
-        @param The callback function that the daemon should call with
-               new lines when changes happen
     '''
-    def __init__(self,logFile, callback):
-
+    def __init__(self,logFile, condorSubmission):
+        
+        #Used to store the collection of observers to notify when
+        #log file changes
+        self.observerCollection = []
+        
         #Check if logFile is valid. If not, raise error. Otherwise open
         absname = ntpath.abspath(logFile)
         try: 
@@ -27,13 +30,6 @@ class CondorDaemon(Daemon):
             logging.error("The logFile to watch is not a valid file")
             raise
         self.logFile = open(absname, "r")
-        
-        #Check if callback is callable
-        if not hasattr(callback, '__call__'):
-            logging.error("The callback function you call with is not callable")
-            raise
-        else:
-            self.callback = callback
 
     #=================================================================#
     
@@ -44,7 +40,7 @@ class CondorDaemon(Daemon):
     
     '''
         Check the logFile for update every interval seconds. If
-        update is detected, send the newlines to callback function
+        update is detected, notify all registered observers
     '''
     def run(self):
         #Interval to run updates
@@ -56,10 +52,47 @@ class CondorDaemon(Daemon):
             location = self.logFile.tell()
             lines = self.logFile.readlines()
             if lines:
-                self.callback(lines)
+                self.__notifyObservers(lines)
             else:
                 self.logFile.seek(location)              
             time.sleep(interval)
     
+    #=================================================================#
+    
+    '''
+        Register the observer to callback to when log file gets updated
+        @param The observer object to listen to file changes.
+        @return True if registered successfully. False otherwise
+    '''
+    def registerObserver(self, observer):
+        if hasattr(observer, 'notify'):
+            self.observerCollection.append(observer)
+            return True
+        else:
+            return False
+    
+    #=================================================================#  
+    
+    '''
+        Remove the observer previously registered to the daemon
+        @param The observer object to remove
+        @return True if removed successfully, false otherwise
+    '''
+    def unregisterObserver(self, observer):
+        try:
+            self.observerCollection.remove(observer)
+            return True
+        except ValueError:
+            return False
+        
+    #=================================================================#
+        
+    '''
+        Notify all registered observers that new lines have been added
+    '''
+    def __notifyObservers(self,lines):
+        for observer in self.observerCollection:
+            observer.notify(lines)
+            
     #=================================================================#
         
