@@ -45,7 +45,7 @@ class Manager:
         #Check that the file specified by path exists.
         absname = ntpath.abspath(path)
         try :
-            os.stat(absname)
+            ntpath.exists(absname)
         except : 
             logging.error("The path specified does not exist")
             raise
@@ -60,9 +60,12 @@ class Manager:
             raise
         
         #Submit to condor & return if false
-        retVal = Manager.callCondor(self, ["condor_submit", "-verbose", absname])
+        retVal = Manager.callCondor(self, ["condor_submit", "-verbose", path])
         if retVal == False:
             return False
+        
+        #Create a model of condor submission along with condor jobs
+        condorSubmission = self.getModels(path, retVal)
         
         #Spawn CondorDaemon process to keep track of condor submission
         #Store this in a map. If the map already contain this, stop previous
@@ -72,7 +75,7 @@ class Manager:
             m.stop()
         except KeyError:
             pass
-        m = CondorDaemon.CondorDaemon(logFile,retVal).start()
+        m = CondorDaemon.CondorDaemon(logFile,condorSubmission).start()
         self.daemonMap[path] = m
         return m
          
@@ -128,10 +131,22 @@ class Manager:
     '''
         Helper method that uses retVal to create and store condor submissions
         and condor jobs
+        @param the path to start this job
         @param the value use to create model
         @return the CondorSubmission model that contains information about condor
                 jobs
     '''
-    def getModels(self,retVal):
-        return False
+    def getModels(self,path,retVal):
+        
+        #Split jobs
+        jobs = re.split("** Proc ", retVal)
+        
+        #Create a condor submission
+        #for job in jobs:
+            #Create the model for a condor job
+            
+            #Set the variables based on extracts from job
+            
+            #Add the condor job to condor submission
+        
             

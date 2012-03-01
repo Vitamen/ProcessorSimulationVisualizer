@@ -142,7 +142,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-    }
+    },
+    'log_folder_location' : './logs/'
 }
 
 #These configurations are related to condor manager module
+CONDOR_DAEMON = {
+                 'interval' : 2,       #The interval to check log file for update
+}
