@@ -6,29 +6,58 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
-import CondorDaemon
+import CondorDaemon, CondorManager
 from CondorData import *
 import time, jsonpickle
-from simulation.settings import CONDOR_DAEMON
+from simulation.settings import CONDOR_DAEMON      
 
-class TestCondorDaemon(TestCase):
-    
+class TestCondorManager(TestCase):
     '''
         Set up things to test condor with
     '''
     def setUp(self):
+        self.x = CondorManager.Manager()
+        
+    '''
+        Set up things to test condor with
+    '''        
+    def testStartJob(self):
+        print 'hi'
+        self.assertTrue(1+1,5)
+        self.assertFalse(self.x.startJob(path='/home/songdet/Documents/condor.sub'))
+         
+     
+#=================================================================#
+#=================================================================#
+
+class ListenerClass:
+    def notify(self, msg):
+        writerr = open("./test.tmp",'a')
+        for val in msg:
+            stringVal = str(jsonpickle.encode(msg[val], max_depth=1))
+            writerr.write(stringVal+"\n")
+        writerr.flush()
+
+#=================================================================#
+#=================================================================#
+
+'''class TestCondorDaemon(TestCase):'''
+    
+'''
+        Set up things to test condor with
+    '''
+'''def setUp(self):
         #Set up the file to test
         self.path = "./tmp2"
         
         #Set up the model
-        self.con = CondorSubmission(path='condor.sub')
+        self.con = CondorSubmission(path='condor.sub', owner='songdet', cmd='hi.txt')
         self.p1 = CondorJob(job_id="110.0", 
-                       owner="songdet", 
                        status="Submit", 
                        status_details="xx",
                        size=20, 
                        cmd='hi.txt',
-                        condor_submission=self.con)
+                       condor_submission=self.con)
         self.p2 = CondorJob(job_id="111.0", 
                        owner="songdet", 
                        status="Submit", 
@@ -42,29 +71,29 @@ class TestCondorDaemon(TestCase):
         self.x = CondorDaemon.CondorDaemon(self.path,self.con)
 
         #Tests
-        self.x.start()
+        self.x.start()'''
 
     #=================================================================#
     
-    '''
+'''
         Simple tests to check if register & unregister
         observers work correctly
     '''
-    def testRegisterUnregisterObserver(self):
+'''def testRegisterUnregisterObserver(self):
         self.assertFalse(self.x.registerObserver('2'))
         self.assertFalse(self.x.unregisterObserver('2'))
         
         x = ListenerClass()
         self.assertTrue(self.x.registerObserver(x))
         self.assertTrue(self.x.unregisterObserver(x))
-        self.assertFalse(self.x.unregisterObserver(x))
+        self.assertFalse(self.x.unregisterObserver(x))'''
     
     #=================================================================#
     
-    '''
+'''
         Simple tests to check if run works correctly
     '''
-    ''' def testRunCondorDaemon(self):
+''' def testRunCondorDaemon(self):
         myX = ListenerClass()
         self.x.registerObserver(myX)
         print(len(self.x.observerCollection))
@@ -80,22 +109,4 @@ class TestCondorDaemon(TestCase):
     '''
     
 #=================================================================#
-#=================================================================#        
-
-class TestCondorManager(TestCase):
-     def setUp(self):
-         return
-     
-#=================================================================#
-#=================================================================#
-
-class ListenerClass:
-    def notify(self, msg):
-        writerr = open("./test.tmp",'a')
-        for val in msg:
-            stringVal = str(jsonpickle.encode(msg[val], max_depth=1))
-            writerr.write(stringVal+"\n")
-        writerr.flush()
-
-#=================================================================#
-#=================================================================#
+#=================================================================#  

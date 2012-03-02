@@ -39,6 +39,7 @@ class CondorDaemon(threading.Thread):
         self.logFile = open(logFile, "r")
         
         #Store condorSubmission jobs for later updates
+        self.condorSubmission = condorSubmission
         self.condorJobs = condorSubmission.condorJobs
         
         #Set Thread as daemon and all super constructor

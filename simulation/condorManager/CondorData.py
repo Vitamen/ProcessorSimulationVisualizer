@@ -6,22 +6,22 @@ Created on Feb 29, 2012
 
 class CondorSubmission:
     
-    def __init__(self, path, condorJobs=None):
+    def __init__(self, path, owner, cmd, condorJobs=[]):
         self.path =path
+        self.owner = owner
+        self.cmd = cmd
         self.condorJobs = condorJobs
 
 #=================================================================#
 
 class CondorJob:
     
-    def __init__(self, job_id, owner, status, status_details, size,
-                 cmd, condor_submission):
+    def __init__(self, job_id, args, condor_submission,
+                 status='000', status_details='Job submitted'):
         self.job_id = job_id
-        self.owner = owner
         self.status = status
         self.status_details = status_details
-        self.size = size
-        self.cmd =cmd
+        self.args = args
         self.condor_submission = condor_submission
 
 #=================================================================#
