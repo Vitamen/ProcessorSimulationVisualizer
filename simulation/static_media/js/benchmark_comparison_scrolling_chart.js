@@ -32,13 +32,9 @@ $(document).ready(function() {
                     	scrolling_parsed_data_point = data_object[key];
                     	scrolling_parsed_name = key.replace("Z",".");
                     };
-                    /*
                     categories.push(scrolling_parsed_name);
-                    series.addPoint(scrolling_parsed_data_point, true, true);
-                    */
-                    
-                    visible_names.push(scrolling_parsed_name);
-                    visible_data.push(scrolling_parsed_data_point);
+                    series.addPoint(scrolling_parsed_data_point);
+     
                     console.log(visible_names.length);
                     chart.redraw();
                 }

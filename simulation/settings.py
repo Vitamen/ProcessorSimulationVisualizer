@@ -151,3 +151,5 @@ LOGGING = {
 CONDOR_DAEMON = {
                  'interval' : 2,       #The interval to check log file for update
 }
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'

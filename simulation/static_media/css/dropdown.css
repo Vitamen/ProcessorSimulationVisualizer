@@ -25,4 +25,4 @@ ul.dropdown li a.hover              { height: 40px; background: #F3D673; positio
 ul.dropdown ul 						{ display: none; position: absolute; top: 0; left: 0; width: 240px; z-index: 1000; }
 ul.dropdown ul li 					{ height: 40px; font-weight: normal; background: #f6f6f6; color: #000; border-bottom: 1px solid #ccc; }
 ul.dropdown ul li a					{ display: block; background: #eee !important; } 
-ul.dropdown ul li a:hover			{ display: block; background: #F3D673 !important; } 
+ul.dropdown ul li a:hover			{ display: block; background: #F3D673 !important; }

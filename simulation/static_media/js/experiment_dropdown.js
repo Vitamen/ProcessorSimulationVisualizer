@@ -1,22 +1,36 @@
 var maxHeight = 600;
+var experiment_id = document.getElementById('experiment_id').getAttribute('value');
 
-var myTextField = document.getElementById('metrics_list');
+var $_GET = getQueryParams(document.location.search);
+var experiments_list = $("#experiment_list");
+var experiment_form = $("form#experiment_form");
 
-console.log(metrics.length);
-for (var i=0; i < metrics.length; i++) {
-	var metric = metrics[i];
-	var metric_element = document.createElement('li');
-	var metric_element_link = document.createElement('a');
-	metric_element_link.setAttribute('href', '/chart?metric='+metric);
-
-	var metric_element_link_text = document.createTextNode(metric);
-
-	metric_element_link.appendChild(metric_element_link_text);
-	metric_element.appendChild(metric_element_link);
-	myTextField.appendChild(metric_element);
+for (var i=0; i < experiments.length; i++) {
+	var experiment = experiments[i];
+	
+	var experiment_element = $('<li>');
+	var experiment_div = $('<div>').attr({
+		id: experiment,
+		class: "experiment"
+	})
+	experiment_element.append(experiment_div);
+	
+	var experiment_element_link_text = document.createTextNode(experiment);
+	var experimentpound = "#"+experiment;
+	experiment_div.click(function() {
+		var experiment = $(this).attr('id');	
+		var form_element = $('<input>').attr({
+		    type: 'hidden',
+		    name: 'experiment',
+		    value: experiment
+		}).appendTo(experiment_form);
+		experiment_form.submit();
+	});
+	
+	experiment_div.append(experiment_element_link_text);
+	
+	experiments_list.append(experiment_element);
 }
-
-
 
 $(function(){
 
