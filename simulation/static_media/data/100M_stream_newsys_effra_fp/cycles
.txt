@@ -1,0 +1,1 @@
+grep: warning: recursive search of stdin

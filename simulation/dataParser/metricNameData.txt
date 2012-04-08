@@ -1,0 +1,4 @@
+version
+cmdline
+cycles
+core_insn_fetched
