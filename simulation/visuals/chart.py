@@ -3,20 +3,23 @@ from django.http import HttpResponse
 
 def index(request):
     metric = request.GET.get('metric', '')
-    experiment = request.GET.get('experiment','')
+    #experiment = request.GET.get('experiment','')
+    request.session['dict'] = {};
+    request.session.modified = True;
     
-    if not experiment == "":
-        request.session["experiment"] = experiment;
-        print 'got new experiment'
+#    if not experiment == "":
+#        request.session["experiment"] = experiment;
+#    else:
+#        experiment = request.session["experiment"];
+    
+    if not metric == "":
+        request.session["metric"] = metric;
     else:
-        experiment = request.session["experiment"];
-    
-    print 'metric is ' + metric
-    print 'experiment is ' + experiment
-    
+        metric = request.session["metric"];
+
     t = loader.get_template('visuals/index.html')
     c = Context({
         'metric': metric,
-        'experiment': experiment
+    #    'experiment': experiment
     })
     return HttpResponse(t.render(c))

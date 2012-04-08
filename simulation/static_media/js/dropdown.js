@@ -1,19 +1,29 @@
 var maxHeight = 600;
 
-var myTextField = document.getElementById('metrics_list');
-
+var metrics_list = $('#metrics_list');
+var metric_form = $("#metric_form");
 console.log(metrics.length);
 for (var i=0; i < metrics.length; i++) {
 	var metric = metrics[i];
-	var metric_element = document.createElement('li');
-	var metric_element_link = document.createElement('a');
-	metric_element_link.setAttribute('href', '/chart?metric='+metric);
-
-	var metric_element_link_text = document.createTextNode(metric);
-
-	metric_element_link.appendChild(metric_element_link_text);
-	metric_element.appendChild(metric_element_link);
-	myTextField.appendChild(metric_element);
+	var metric_element = $('<li>');
+	var metric_element_text = document.createTextNode(metric);
+	var metric_div = $('<div>').attr({
+		id: metric,
+		class: "metric"
+	})
+	metric_element.append(metric_div);
+	metric_div.append(metric_element_text);
+	
+	metric_div.click(function() {
+		var metric = $(this).attr('id');
+		var form_element = $('<input>').attr({
+		    type: 'hidden',
+		    name: 'metric',
+		    value: metric
+		}).appendTo(metric_form);
+		metric_form.submit();
+	})
+	metrics_list.append(metric_element);
 }
 
 
