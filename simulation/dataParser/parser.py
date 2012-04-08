@@ -26,19 +26,13 @@ def getMetrics():
    
    
 def extract(exp,aMetric):
+   
     FILE = open(outputDataPath + exp + aMetric + ".txt","w")
-    
-    f = open('temp.txt','w')
-    p = subprocess.Popen('cd '+ sampleDataPath + ' ;' + 'grep -ris '+ aMetric + ' .', shell=True, stdout=f, stderr=subprocess.STDOUT)
-    p.wait()
-    f.close()
-    
-    
-    
-    #for line in p.stdout.readlines():
-        #print line
+    p = subprocess.Popen('cd '+ sampleDataPath + ' ;' + 'grep -ris '+ aMetric + ' .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in p.stdout.readlines():
+        print line
         #Create an output file
-        #FILE.write(line)
+        FILE.write(line)
 
     FILE.close()
     
@@ -52,13 +46,11 @@ def getDataFor(self):
     if not os.path.exists(outputDataPath + exp):
         os.makedirs(outputDataPath + exp)
     
-    allMetrics = getMetrics()
-    for aMetric in allMetrics:
-        print aMetric
-        extract(exp,aMetric)
-        ##for aMetric in allMetrics:
-    ##aMetric = "cmdline"
-        
+    #allMetrics = getMetrics()
+    #for aMetric in allMetrics:
+    #    print aMetric
+    aMetric = "version"
+    extract(exp,aMetric)  
         
         
 

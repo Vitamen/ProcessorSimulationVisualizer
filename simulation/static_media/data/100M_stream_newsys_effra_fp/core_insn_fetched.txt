@@ -1,1 +1,0 @@
-./100M_stream_newsys_effra_fp/00.ammp/sim.out:"core_insn_fetched": [164461646],
