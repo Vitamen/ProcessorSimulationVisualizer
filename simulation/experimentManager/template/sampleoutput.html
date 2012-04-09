@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% for val1 in paramlist %}
+		<p>{{val1}}</p>
+	{% endfor %}
+	
+	{% for val2 in vallist %}
+		<p>{{val2}}</p>
+	{% endfor %}
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% load extra_tags %}
+
+//************************************************
+// Attach page-specific javascripts
+//************************************************
+
+{% block javascript %}
+<script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/jquery.equalHeight.js"></script>
+<script type="text/javascript" src="js/jquery.jeditable.js"></script>
+{% endblock %}
+
+//************************************************
+// Javascripts to run on document ready
+//************************************************
+
+{% block onready %}
+$(".tablesorter").tablesorter();
+$("#accordion").tabs("#accordion div.pane", {
+	tabs : 'h2',
+	effect : 'slide',
+	initialIndex : null
+});
+
+// ********** Check all checkboxes on start-up **********
+
+$('.checkall').click(
+		function() {
+			$(this).parents('fieldset:eq(0)').find(':checkbox')
+					.attr('checked', this.checked);
+});
+ editButtons();
+ 
+// ********** Dynamically add rows to table **********
+
+ var i = 1;
+ $('.addRow').click(
+		 function() {
+			 if($('#argtable > tbody > tr:first').length > 0) {
+				$('#argtable > tbody > tr:first').clone().appendTo('#argtable > tbody:last');
+				$('#argtable > tbody > tr:last').find("td[id^=front]").attr('id','front'+i);
+				$('#argtable > tbody > tr:last').find("input[id^=check]").attr('id','check'+i);
+				$('#argtable > tbody > tr:last').find("td[name^=param]").attr('name','param'+i);
+				$('#argtable > tbody > tr:last').find("td[name^=val]").attr('name','val'+i);
+				$('#argtable > tbody > tr:last').attr('id','row'+i);
+				i = i + 1;
+			 } else {
+			 	$('#argtable').append('<tr id="row0"><td id="front0"><input type="checkbox" id="check0"/></td><td class="edit" name="param0" >null</td><td class="edit" name="val0">null</td></tr>');
+			 }
+			 editButtons();
+			 return false;
+ });
+
+// ********** Dynamically remove rows to table **********
+
+ $('.delRow').click(
+		 function() {				 
+			 $('#argtable').find("input").each(function()
+			 {
+				 if($(this).is(':checked')) {
+					 var curId = $(this).attr('id');
+					 curId = curId.replace("check","#row")
+					 $(curId).remove();
+				 }
+			 });
+			 return false;
+ });
+ 
+// ********** Submit needed values to server **********
+
+ $('#run').click(
+ 	function() {
+ 		var suite = $("select#bench").val();
+ 		suite = "#" + suite + 'form';
+ 		$(suite).find("td").each(function() {
+ 			$(this).find("input").attr("name",$(this).text());
+ 		});
+ 		$("#argtable").find("tbody > tr > .edit").each(function() {
+ 			var input = $("<input>").attr("type", "hidden").attr("name", $(this).attr('name')).val($(this).html());
+ 			$('#argtable').append($(input));
+ 		});
+ });
+ 
+ 
+{% endblock %}
+
+//************************************************
+// Config block contents
+//************************************************
+
+{% block content %}
+<section id="main" class="column">
+<h4 class="alert_info">Welcome to sample simulation data management
+	layout. This page is not yet complete.</h4>
+
+<form id="argForm" action="runExp" method="post"> {% csrf_token %}
+	<article class="module width_full">
+	<div id="accordion">
+		<header>
+		<h2 class="current">Arguments</h2>
+		</header>
+		<div class="pane" style="display: block">
+
+			<!-- EXPERIMENT NAME -->
+			<fieldset>
+				<label>Experiment Name</label> <input type="text" id="expname"
+					name="expname">
+			</fieldset>
+			
+			<!-- END PATH TO EXECUTABLE -->
+			
+			<!-- PATH TO EXECUTABLE -->
+			<fieldset>
+				<label>Path to Executable</label> <input type="file" id="path"
+					name="path">
+			</fieldset>
+			<!-- END PATH TO EXECUTABLE -->
+
+			<!-- BENCHMARK SUITES -->
+			<fieldset>
+				<label>Benchmark suite</label> <select id="bench"
+					onchange="showForm()" name="benchsuite">
+					<option value="speccpu">speccpu</option>
+					<option value="spec2006">spec2006</option>
+				</select>
+			</fieldset>
+			<!-- END BENCHMARK SUITES -->
+
+			<!-- BENCHMARKS -->
+			<fieldset>
+				<label> Benchmarks
+					<div id="floatright">
+						(Select all <input type="checkbox" checked="yes" class="checkall">)
+					</div> </label>
+
+				<table class="tablesorter" id="speccpuform">
+						<tr>
+						{% for bench in speccpu %}
+							<td><input type="checkbox" checked="yes" /><br>{{ bench }}</br></td>
+							{% if not forloop.counter|mod:5 %}
+								</tr><tr>
+							{% endif %}
+						{% endfor %}
+						</tr>
+				</table>
+
+				<table class="tablesorter" id="spec2006form" style="display: none;">
+						<tr>
+						{% for bench in spec2006 %}
+							<td><input type="checkbox" checked="yes" /><br />{{ bench }}</td>
+							{% if not forloop.counter|mod:5 %}
+								</tr><tr>
+							{% endif %}
+						{% endfor %}
+						</tr>
+				</table>
+			</fieldset>
+			<!-- END BENCHMARKS -->
+
+			<!-- ARGUMENT SETS -->
+			<fieldset>
+				<label>Simulation arguments <input type="image"
+					id="leftbutton" class="delRow" src="images/icn_trash.png" title="Trash"> <input
+					type="image" id="leftbutton" class="addRow"
+					src="images/icn_new_article.png" title="Add"> </label>
+				<div class="spacer"></div>
+				<table id="argtable" class="tablesorter" cellspacing="0">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Parameter</th>
+							<th>Value</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr id="row0">
+							<td id="front0"><input type="checkbox" id="check0"/></td>
+							<td class="edit" name="param0">restore</td>
+							<td class="edit" name="val0">true</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="spacer"></div>
+				<input type="submit" class="config" value="Load Configuration">
+				<input type="submit" class="config" value="Save Configuration">
+				<input type="submit" class="config"
+					value="Set Default Configuration">
+			</fieldset>
+			<!-- END ARGUMENT SETS -->
+			
+		</div>
+		<header>
+		<h2>Miscellaneous Configurations</h2>
+		</header>
+		<div class="pane">
+			<fieldset>
+				<label>Experiment Root Directory</label>
+				<div id="current_val">/afs/ece.cmu.edu/usr/cfallin/exp</div>
+				<input type="file" id="path">
+			</fieldset>
+		</div>
+	</div>
+	</article>
+	<!-- end of pane article -->
+	<div class="spacer"></div>
+	<input type="submit" id="run" value="Run Experiment">
+</section>
+</form>
+{% endblock %}
