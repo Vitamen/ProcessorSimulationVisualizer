@@ -106,7 +106,6 @@ TEMPLATE_DIRS = (
    os.path.join(PROJECT_PATH,"template"),
    os.path.join(PROJECT_PATH,"condorManager/template"),
    os.path.join(PROJECT_PATH,"experimentManager/template"),
-   "/Users/sophiez/Dropbox/Spring 2012/DataSimulation/ProcessorSimulationVisualizer/simulation/templates"
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
 )

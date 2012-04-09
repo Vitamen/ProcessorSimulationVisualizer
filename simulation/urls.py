@@ -14,7 +14,7 @@ urlpatterns = patterns('',
         {'document_root': os.path.join(PROJECT_PATH,'template')} ),
     url(r'^chart/$', 'visuals.chart.index'),
     url(r'^chart/(?P<username>)/$', 'visuals.chart.metric'),
-    
+
     #Url to read lines from a file
     url(r'^read/$', 'dataParser.parser.readFile'),
     url(r'^listExp/$','dataParser.parser.getExperimentList'),
@@ -33,5 +33,5 @@ urlpatterns = patterns('',
 urlpatterns += patterns('django.views.static',
     (r'^static_media/(?P<path>.*)$', 
         'serve', {
-        'document_root': '/Users/anuraagjain/Documents/Class Spring 2012/Simulation Tool/ProcessorSimulationVisualizer/simulation/static_media',
+        'document_root':  os.path.join(PROJECT_PATH,'static_media'),
         'show_indexes': True }),)
