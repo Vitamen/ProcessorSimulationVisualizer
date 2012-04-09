@@ -12,9 +12,26 @@ urlpatterns = patterns('',
     url(r'^config/updateArgs$', 'experimentManger.view.updateArgs'),
     url(r'^config/(?P<path>.*)$', 'django.views.static.serve', 
         {'document_root': os.path.join(PROJECT_PATH,'template')} ),
-   
-    #url(r'^track/$', 'condorManager.views.tracking'),
-    #url(r'^track/endPoint/', 'condorManager.views.endPoint'),
-    # url(r'^track/(?P<path>.*)$', 'django.views.static.serve', 
-    #  {'document_root': os.path.join(PROJECT_PATH,'condorManager/template')} ),
+    url(r'^chart/$', 'visuals.chart.index'),
+    url(r'^chart/(?P<username>)/$', 'visuals.chart.metric'),
+    
+    #Url to read lines from a file
+    url(r'^read/$', 'dataParser.parser.readFile'),
+    url(r'^listExp/$','dataParser.parser.getExperimentList'),
+    url(r'^getData/$','dataParser.parser.getDataFor')
 )
+    # Examples:
+    # url(r'^$', 'simulation.views.home', name='home'),
+    # url(r'^simulation/', include('simulation.foo.urls')),
+
+    # Uncomment the admin/doc line below to enable admin documentation:
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+    # Uncomment the next line to enable the admin:
+    # url(r'^admin/', include(admin.site.urls)),
+
+urlpatterns += patterns('django.views.static',
+    (r'^static_media/(?P<path>.*)$', 
+        'serve', {
+        'document_root': '/Users/anuraagjain/Documents/Class Spring 2012/Simulation Tool/ProcessorSimulationVisualizer/simulation/static_media',
+        'show_indexes': True }),)

@@ -51,14 +51,13 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/static_media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 STATIC_ROOT = ''
-
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
@@ -106,7 +105,10 @@ ROOT_URLCONF = 'simulation.urls'
 TEMPLATE_DIRS = (
    os.path.join(PROJECT_PATH,"template"),
    os.path.join(PROJECT_PATH,"condorManager/template"),
-   os.path.join(PROJECT_PATH,"experimentManager/template")
+   os.path.join(PROJECT_PATH,"experimentManager/template"),
+   "/Users/sophiez/Dropbox/Spring 2012/DataSimulation/ProcessorSimulationVisualizer/simulation/templates"
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
 )
 
 INSTALLED_APPS = (
@@ -117,7 +119,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'condorManager',
-    'experimentManager'
+    'experimentManager',
+    'visuals',
+    'condorManager'
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
