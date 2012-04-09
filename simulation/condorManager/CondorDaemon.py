@@ -44,7 +44,6 @@ class CondorDaemon(threading.Thread):
         
         #Set Thread as daemon and all super constructor
         super(CondorDaemon,self).__init__()
-        self.daemon = True
         self.running = True
         
     #=================================================================#
@@ -61,7 +60,7 @@ class CondorDaemon(threading.Thread):
         Check the logFile for update every interval seconds. If
         update is detected, notify all registered observers
         
-        ** This method is called start in Thread. Do not call this
+        ** This method is called by start in Thread. Do not call this
         method directly. call start() instead
     '''
     def run(self):
@@ -97,11 +96,8 @@ class CondorDaemon(threading.Thread):
         @return True if registered successfully. False otherwise
     '''
     def registerObserver(self, observer):
-        if hasattr(observer, 'notify'):
-            self.observerCollection.append(observer)
-            return True
-        else:
-            return False
+        self.observerCollection.append(observer)
+        return True
     
     #=================================================================#  
     

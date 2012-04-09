@@ -24,7 +24,7 @@ class TestCondorManager(TestCase):
     def testStartJob(self):
         print 'hi'
         self.assertTrue(1+1,5)
-        self.assertFalse(self.x.startJob(path='/home/songdet/Documents/condor.sub'))
+        self.x.startJob(path='/home/songdet/Documents/condor.sub')
          
      
 #=================================================================#

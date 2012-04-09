@@ -75,7 +75,6 @@ class Manager(object):
             m.stop()
         except KeyError:
             pass
-        print logFile
         m = CondorDaemon.CondorDaemon(logFile,condorSubmission).start()
         self.daemonMap[path] = m
         return m
@@ -139,15 +138,17 @@ class Manager(object):
     def getModels(self,path,retVal):
         
         #Split jobs
-        jobs = re.split("** Proc ", retVal)
+        retVal = retVal.strip()
+        jobs = re.split("\*\* Proc ", retVal)
+        jobs = jobs[1:]
         submission = None
-        
+
         #Go through each job to extract condorJob
         firstJob = True
         for job in jobs:
             #During all jobs, extract other values
             job = job.strip()
-            lines = job.split(str="\n")
+            lines = job.split("\n")
             job_id = lines[0][:-1] 
                                         
             #During the first job, extract the values that are the
@@ -158,7 +159,7 @@ class Manager(object):
                         cmd = line[line.find('"')+1:len(line)-1]
                     elif re.match("^Owner",line):
                         owner = line[line.find('"')+1:len(line)-1]
-                    submission = CondorSubmission(path=path,cmd=cmd,owner=owner)
+                submission = CondorSubmission(path=path,cmd=cmd,owner=owner)
                 firstJob = False
                 
             #Get recurring values
@@ -170,6 +171,6 @@ class Manager(object):
             condorJob = CondorJob(job_id=job_id,args=args,condor_submission=submission)
             submission.condorJobs.append(condorJob)
         
-            return submission
+        return submission
     
     #=================================================================#

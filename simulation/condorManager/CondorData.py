@@ -11,6 +11,13 @@ class CondorSubmission:
         self.owner = owner
         self.cmd = cmd
         self.condorJobs = condorJobs
+    
+    def __str__(self):
+        retVal = "Path: " + self.path + "\nOwner: " + self.owner + \
+                "\nCmd: " + self.cmd + "\n"
+        for condorJob in self.condorJobs:
+            retVal = retVal + "\n" + str(condorJob) 
+        return retVal
 
 #=================================================================#
 
@@ -23,5 +30,10 @@ class CondorJob:
         self.status_details = status_details
         self.args = args
         self.condor_submission = condor_submission
+    
+    def __str__(self):
+        return "job_id: " + self.job_id + "\nstatus: " + self.status + \
+            "\nstatus_details: " + self.status_details + \
+            "\nargs: " + self.args + "\n"
 
 #=================================================================#
