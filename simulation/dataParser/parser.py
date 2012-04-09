@@ -27,6 +27,15 @@ def getMetrics():
    
 def extract(exp,aMetric):
    
+    exp = '100M_stream_newsys_effra_fp/' 
+    os.path.join(sampleDataPath,exp)
+    ## Give shell command to move to correct path
+    
+    ## Look for Exp folder
+    if not os.path.exists(outputDataPath + exp):
+        os.makedirs(outputDataPath + exp)
+        
+        
     ##Create an output file with the metric name.
     FILE = open(outputDataPath + exp + aMetric + ".js","w")
     
@@ -49,13 +58,14 @@ def extract(exp,aMetric):
         print simple
 
         #Create an output file
-        FILE.write("{" + tokens[2] + ":" + simple + "},")
+        FILE.write("{\"" + tokens[2] + "\":" + simple + "},")
 
     FILE.write("]")
     FILE.close()
     
         
 def getDataFor(self):
+    
     exp = '100M_stream_newsys_effra_fp/' 
     os.path.join(sampleDataPath,exp)
     ## Give shell command to move to correct path
