@@ -11,7 +11,7 @@ for (var i = 0; i < 10; i++) {
 	var data_item = upperStack.shift();
 	for (var parsed_key in data_item) {
 		visible_names.push(parsed_key.replace("Z","."));
-		visible_data.push(data_item[parsed_key]);
+		visible_data.push(data_item[parsed_key][0]);
 	}
 }
 

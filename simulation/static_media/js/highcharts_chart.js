@@ -6,11 +6,14 @@ var metric_id = document.getElementById('metric_id').getAttribute('value');
 
 var i = 0;
 
+console.log("fjweiifow");
+/*
 for (var key in data) {
 	var data_item = data[key];
 	for (var parsed_key in data_item) {
 		parsed_names[i] = parsed_key.replace("Z",".");
-		parsed_data[i++] = data_item[parsed_key];
+		parsed_data[i++] = data_item[parsed_key][0];
+		console.log("fjweiifow");
 	}
 }
 
@@ -65,3 +68,4 @@ $(document).ready(function() {
         },]
     });
 });
+*/

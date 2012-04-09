@@ -20,7 +20,9 @@
 	    <div id="toolbar">
 	    	<div id="experiment-box" class="toolbar-box">
 	    		<h3>Experiment(s)</h3>
-	    		{{experiment}}
+	    		{% for experiment in experiments %}
+	    			{{experiment}}
+				{% endfor %}
 	    	</div>
 	    	<div id="metric-box" class="toolbar-box">
 	    		<h3>Metric(s)</h3>
@@ -89,7 +91,11 @@
     <script type="text/javascript" src="/static_media/data/experiments.js"></script>
     <script type="text/javascript" src="/static_media/js/experiment_dropdown.js"></script>
     
-    <script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
+    <!-- Import Relevant Data -->
+    {% for experiment in experiments %}
+	    <script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
+	{% endfor %}
+    
     <script type="text/javascript" src="/static_media/js/benchmark_comparison_scrolling_chart.js"></script>
  
 	<!-- 

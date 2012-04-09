@@ -23,8 +23,6 @@ def getMetrics():
    
    
 def extract(exp,aMetric):
-   
-    exp = '100M_stream_newsys_effra_fp/' 
     os.path.join(sampleDataPath,exp)
     ## Give shell command to move to correct path
     
@@ -34,28 +32,26 @@ def extract(exp,aMetric):
         
         
     ##Create an output file with the metric name.
-    FILE = open(outputDataPath + exp + aMetric + ".js","w")
+    FILE = open(outputDataPath + exp + "/" + aMetric + ".js","w")
     
     ##Grep for the given metric 
-    p = subprocess.Popen('cd '+ sampleDataPath + ' ;' + 'grep -ris '+ aMetric + ' .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = subprocess.Popen('cd '+ sampleDataPath + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
    
     ## Open json object
     FILE.write("var data = [")
     ##Parse and write data
     for line in p.stdout.readlines():
-        
         ##Now parse the line to extract the benchmark and value
         tokens = line.split("/")
-        print "Token 3#" + tokens[3].rstrip(",\n")
-        print "sim.out:" + '"' + aMetric + '"'
-        
-        simple = tokens[3].rstrip(",\n")
+        print tokens
+        simple = tokens[2].rstrip(",\n")
         simple = simple.lstrip("sim.out:")
         simple = simple.lstrip('"' + aMetric + '"' + ":")
-        print simple
-
+        simple = simple.lstrip(' ')
+        if not simple.find("[") == 0:
+            simple= "[" + simple + "]"
         #Create an output file
-        FILE.write("{\"" + tokens[2] + "\":" + simple + "},")
+        FILE.write("{\"" + tokens[1] + "\":" + simple + "},")
 
     FILE.write("]")
     FILE.close()
