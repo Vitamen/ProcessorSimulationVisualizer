@@ -6,11 +6,9 @@ sampleDataPath = 'dataParser/SampleData/'
 outputDataPath = 'static_media/data/'
 
 def readFile(self):
-    print(os.path.relpath('sim.out'))
     f = open('sim.out')
     lines = f.readlines()
     f.close()
-    print lines
         
 def getExperimentList(self):
     print [f for f in os.listdir(sampleDataPath)]
@@ -21,7 +19,6 @@ def getMetrics():
     metriclist = []
     for line in open('dataParser/metricNameData.txt','r').readlines():
         metriclist.append(line)
-        print line
     return metriclist
    
    
@@ -69,7 +66,3 @@ def getDataFor(self):
     #    print aMetric
     #aMetric = "version"
         extract(exp,aMetric.rstrip('\n'))  
-        
-        
-
-    

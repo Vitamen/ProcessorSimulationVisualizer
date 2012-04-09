@@ -26,6 +26,6 @@ urlpatterns = patterns('',
 urlpatterns += patterns('django.views.static',
     (r'^static_media/(?P<path>.*)$', 
         'serve', {
-        'document_root': '/Users/anuraagjain/Documents/Class Spring 2012/Simulation Tool/ProcessorSimulationVisualizer/simulation/static_media',
+        'document_root': '/Users/sophiez/Dropbox/Spring 2012/DataSimulation/ProcessorSimulationVisualizer/simulation/static_media',
         'show_indexes': True }),)
     
