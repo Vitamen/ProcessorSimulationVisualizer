@@ -32,6 +32,7 @@ class Experiments(models.Model):
     execpath = models.CharField(max_length=200)
     bsuite = models.ForeignKey(BenchmarkSuite)
     argset = models.ForeignKey(ArgumentSet)
+    subdate = models.DateTimeField('submission date')
     
 class BenchmarkSet(models.Model):
     expname = models.ForeignKey(Experiments)

@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from models import *
+from datetime import datetime
 import re, json, os
 
 PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
@@ -53,7 +54,8 @@ def runExp(request):
     myexpname = request.POST['expname']
     myexecpath = request.POST['path']
     mybsuite = BenchmarkSuite.objects.get(suite=request.POST['benchsuite'])
-    experiment = Experiments(expname=myexpname, execpath=myexecpath, bsuite=mybsuite, argset=myargset)
+    mysubdate = datetime.now()
+    experiment = Experiments(expname=myexpname, execpath=myexecpath, bsuite=mybsuite, argset=myargset, subdate=mysubdate)
     experiment.save()
     
     #Generate dictionary of things used in sampleout.html
@@ -65,4 +67,11 @@ def runExp(request):
             'speccpu' : speccpu
             }
     return render_to_response('sampleoutput.html', dict, context_instance=RequestContext(request))
-        
+
+#########################################################
+# Browse data in the database
+#########################################################
+def browse(request):
+    #Get the list of all experiments in the database
+    experiments = Experiments.objects.all()        
+    return render_to_response('expbrowse.html' , {'experiments' : experiments}, context_instance=RequestContext(request))

@@ -1,0 +1,71 @@
+{% extends "base.html" %} 
+
+//************************************************
+// Attach page-specific javascripts
+//************************************************
+{% block javascript %}
+<link rel="stylesheet" href="/static_media/css/demo_table_jui.css" type="text/css"
+	media="screen" />
+<link rel="stylesheet" href="/static_media/css/jquery-ui-1.8.4.custom.css" type="text/css"
+	media="screen" />
+<script type="text/javascript" src="/static_media/js/jquery.dataTables.js"></script>
+{% endblock %}
+
+//************************************************
+// Javascripts to run on document ready
+//************************************************
+
+{% block onready %}
+$(document).ready(function() {
+		oTable = $('#example').dataTable({
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers"
+		});
+} );
+{% endblock %}
+
+//************************************************
+// Breadcrumbs
+//************************************************
+
+{% block breadcrumbs %}
+<div class="breadcrumbs_container">
+	<article class="breadcrumbs">
+		<a href="/browse">Browse Data</a>
+		<div class="breadcrumb_divider"></div>
+		<a href="index.html">View Users</a>
+	</article>
+</div>
+{% endblock %}
+
+//************************************************
+// Config block contents
+//************************************************
+
+{% block content %}
+<fieldset>
+<div class="demo_jui">
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+	<thead>
+		<tr>
+			<th>Experiment Name</th>
+			<th>Submission Time</th>
+			<th>Executable Path</th>
+			<th>Benchmark Suite</th>
+			<th>Status</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for exp in experiments %}
+		<tr class="gradeX">
+			<td class="center">{{exp.expname}}</td>
+			<td class="center">{{exp.subdate}}t</td>
+			<td class="center">{{exp.execpath}}</td>			
+			<td class="center">{{exp.bsuite}}</td>	
+			<td class="center">I</td>	
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</fieldset>
+{% endblock %}
