@@ -95,7 +95,7 @@ section#secondary_bar {
 
 section#secondary_bar .user {
 	float: left;
-	width: 23%;
+	width: 200px;
 	height: 38px;
 }
 
@@ -191,7 +191,7 @@ article.breadcrumbs {
 
 /* Sidebar */
 aside#sidebar {
-	width: 23%;
+	width: 200px;
 	background: #E0E0E3 url(../images/sidebar.png) repeat;
 	float: left;
 	min-height: 800px;

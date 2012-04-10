@@ -9,6 +9,11 @@
 <script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="js/jquery.equalHeight.js"></script>
 <script type="text/javascript" src="js/jquery.jeditable.js"></script>
+<script type="text/javascript">
+	$(function() {
+		$('.column').equalHeight();
+	});
+</script>
 {% endblock %}
 
 //************************************************
@@ -85,12 +90,15 @@ $('.checkall').click(
  
 {% endblock %}
 
+//************************************************
+// Breadcrumbs
+//************************************************
 {% block breadcrumbs %}
 <div class="breadcrumbs_container">
 	<article class="breadcrumbs">
 		<a href="/config">New Simulation</a>
 		<div class="breadcrumb_divider"></div>
-		<a href="index.html">Condor Status</a>
+		<a href="#">Condor Status</a>
 	</article>
 </div>
 {% endblock %}
@@ -207,7 +215,7 @@ $('.checkall').click(
 			<fieldset>
 				<label>Experiment Root Directory</label>
 				<div id="current_val">/afs/ece.cmu.edu/usr/cfallin/exp</div>
-				<input type="file" id="path">
+				<input type="file" id="path" name="initialdir">
 			</fieldset>
 		</div>
 	</div>
