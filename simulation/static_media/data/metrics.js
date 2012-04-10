@@ -1,10 +1,11 @@
 var metrics = [
-"version",
-"cmdline",
 "cycles",
 "core_full_window_stall_l2_miss"
 ]
 /*
+"version",
+"cmdline",
+"cycles",
 "core_insn_fetched",
 "core_insn_fetched_onpath",
 "core_insn_retired",

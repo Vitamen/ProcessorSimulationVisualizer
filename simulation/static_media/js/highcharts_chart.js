@@ -7,7 +7,7 @@ var metric_id = document.getElementById('metric_id').getAttribute('value');
 var i = 0;
 
 console.log("fjweiifow");
-/*
+
 for (var key in data) {
 	var data_item = data[key];
 	for (var parsed_key in data_item) {
@@ -68,4 +68,3 @@ $(document).ready(function() {
         },]
     });
 });
-*/

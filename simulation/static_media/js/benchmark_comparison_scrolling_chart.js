@@ -18,6 +18,7 @@ for (var i = 0; i < 10; i++) {
 $(document).ready(function() {
     chart = new Highcharts.Chart({
         chart: {
+        	backgroundColor: '#F8F8F8',
             renderTo: 'container',
             type: 'column',
             events: {
@@ -41,7 +42,7 @@ $(document).ready(function() {
             },
         },
         title: {
-            text: '100M_np_base benchmark chart for core_insn_fetched and core_insn_fetched_onpath'
+            text: ''
         },
         xAxis: {
             categories:visible_names
