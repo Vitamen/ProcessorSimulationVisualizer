@@ -16,7 +16,7 @@ class Arguments(models.Model):
     argname = models.CharField(max_length=200)
     value = models.CharField(max_length=200)
     def __unicode__(self):
-        return self.name
+        return self.argname
 
 class ArgumentSet(models.Model):
     setname = models.CharField(max_length=200, primary_key=True)
@@ -29,9 +29,9 @@ class ArgMembership(models.Model):
     
 class Experiments(models.Model):
     expname = models.CharField(max_length=200, primary_key=True)
-    execPath = models.CharField(max_length=200)
+    execpath = models.CharField(max_length=200)
     bsuite = models.ForeignKey(BenchmarkSuite)
-    argSet = models.ForeignKey(ArgumentSet)
+    argset = models.ForeignKey(ArgumentSet)
     
 class BenchmarkSet(models.Model):
     expname = models.ForeignKey(Experiments)
