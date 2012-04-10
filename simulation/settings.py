@@ -1,8 +1,9 @@
+import os
 # Django settings for simulation project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
+PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -12,7 +13,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/songdet/Documents/workspaces/webapp/database.db', # Or path to database file if using sqlite3.
+        'NAME': os.path.join(PROJECT_PATH,"database.db"), # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -102,10 +103,11 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'simulation.urls'
 
 TEMPLATE_DIRS = (
-                 "/Users/sophiez/Dropbox/Spring 2012/DataSimulation/ProcessorSimulationVisualizer/simulation/templates"
+   os.path.join(PROJECT_PATH,"template"),
+   os.path.join(PROJECT_PATH,"condorManager/template"),
+   os.path.join(PROJECT_PATH,"experimentManager/template"),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
 )
 
 INSTALLED_APPS = (
@@ -115,6 +117,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'condorManager',
+    'experimentManager',
     'visuals',
     'condorManager'
     # Uncomment the next line to enable the admin:
@@ -153,3 +157,6 @@ CONDOR_DAEMON = {
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+PUSHER_APP_ID = '16329'
+PUSHER_KEY = '9bc222a1d5058587fb2c'
+PUSHER_SECRET = '0b72799610efa7a8fc90'

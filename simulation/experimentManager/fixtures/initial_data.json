@@ -1,0 +1,304 @@
+[
+  {
+    "model": "experimentManager.BenchmarkSuite",
+    "pk": 1,
+    "fields": {
+      "suite": "speccpu"
+    }
+  },
+  {
+    "model": "experimentManager.BenchmarkSuite",
+    "pk": 2,
+    "fields": {
+      "suite": "spec2006"
+    }
+  },
+  {
+	"model": "experimentManager.Benchmarks",
+	"pk": 1,
+	"fields": {
+		"suite": 1,
+		"name": "06.429.mcf"
+	}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 2,
+		"fields": {
+			"suite": 1,
+			"name": "06.454.calculix"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 3,
+		"fields": {
+			"suite": 1,
+			"name": "06.437.leslie3d"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 4,
+		"fields": {
+			"suite": 1,
+			"name": "06.433.milc"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 5,
+		"fields": {
+			"suite": 1,
+			"name": "00.art"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 6,
+		"fields": {
+			"suite": 1,
+			"name": "06.458.sjeng"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 7,
+		"fields": {
+			"suite": 1,
+			"name": "06.403.gcc"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 8,
+		"fields": {
+			"suite": 1,
+			"name": "06.416.gamess"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 9,
+		"fields": {
+			"suite": 1,
+			"name": "06.400.perlbench"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 10,
+		"fields": {
+			"suite": 1,
+			"name": "06.482.sphinx3"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 11,
+		"fields": {
+			"suite": 1,
+			"name": "06.410.bwaves"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 12,
+		"fields": {
+			"suite": 1,
+			"name": "00.equake"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 13,
+		"fields": {
+			"suite": 1,
+			"name": "06.435.gromacs"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 14,
+		"fields": {
+			"suite": 1,
+			"name": "06.445.gobmk"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 15,
+		"fields": {
+			"suite": 1,
+			"name": "06.434.zeusmp"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 16,
+		"fields": {
+			"suite": 1,
+			"name": "00.mcf"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 17,
+		"fields": {
+			"suite": 1,
+			"name": "06.444.namd"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 18,
+		"fields": {
+			"suite": 1,
+			"name": "06.456.hmmer"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 19,
+		"fields": {
+			"suite": 1,
+			"name": "00.applu"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 20,
+		"fields": {
+			"suite": 1,
+			"name": "06.462.libquantum"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 21,
+		"fields": {
+			"suite": 1,
+			"name": "00.parser"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 22,
+		"fields": {
+			"suite": 1,
+			"name": "06.464.h264ref"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 23,
+		"fields": {
+			"suite": 1,
+			"name": "06.450.soplex"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 24,
+		"fields": {
+			"suite": 1,
+			"name": "06.473.astar"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 25,
+		"fields": {
+			"suite": 1,
+			"name": "00.mgrid"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 26,
+		"fields": {
+			"suite": 1,
+			"name": "06.401.bzip2"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 27,
+		"fields": {
+			"suite": 1,
+			"name": "06.465.tonto"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 28,
+		"fields": {
+			"suite": 1,
+			"name": "06.453.povray"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 29,
+		"fields": {
+			"suite": 1,
+			"name": "00.facerec"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 30,
+		"fields": {
+			"suite": 1,
+			"name": "00.ammp"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 31,
+		"fields": {
+			"suite": 1,
+			"name": "00.lucas"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 32,
+		"fields": {
+			"suite": 1,
+			"name": "06.459.GemsFDTD"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 33,
+		"fields": {
+			"suite": 1,
+			"name": "06.436.cactusADM"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 34,
+		"fields": {
+			"suite": 1,
+			"name": "06.470.lbm"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 35,
+		"fields": {
+			"suite": 1,
+			"name": "00.swim"
+		}
+	},
+	{
+		"model": "experimentManager.Benchmarks",
+		"pk": 36,
+		"fields": {
+			"suite": 2,
+			"name": "need_benchmarks"
+		}
+	}
+]

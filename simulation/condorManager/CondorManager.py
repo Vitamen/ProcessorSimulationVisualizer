@@ -1,5 +1,5 @@
-import logging, subprocess, os ,ntpath, re, CondorDaemon
-from models import CondorSubmission, CondorJob
+import logging, subprocess, ntpath, re, CondorDaemon
+from CondorData import CondorSubmission, CondorJob
 
 '''
 Provides the interface for talking to Condor cluster.
@@ -17,7 +17,7 @@ Created on Feb 22, 2012
 
 @author: songdet
 '''
-class Manager:
+class Manager(object):
     
     '''
         Constructor checks if condor is installed. If it's not installed, 
@@ -133,20 +133,44 @@ class Manager:
         and condor jobs
         @param the path to start this job
         @param the value use to create model
-        @return the CondorSubmission model that contains information about condor
-                jobs
+        @return the CondorSubmission model that contains information about condor jobs
     '''
     def getModels(self,path,retVal):
         
         #Split jobs
-        jobs = re.split("** Proc ", retVal)
+        retVal = retVal.strip()
+        jobs = re.split("\*\* Proc ", retVal)
+        jobs = jobs[1:]
+        submission = None
+
+        #Go through each job to extract condorJob
+        firstJob = True
+        for job in jobs:
+            #During all jobs, extract other values
+            job = job.strip()
+            lines = job.split("\n")
+            job_id = lines[0][:-1] 
+                                        
+            #During the first job, extract the values that are the
+            #same across all jobs.
+            if firstJob:
+                for line in lines:
+                    if re.match("^Cmd",line):
+                        cmd = line[line.find('"')+1:len(line)-1]
+                    elif re.match("^Owner",line):
+                        owner = line[line.find('"')+1:len(line)-1]
+                submission = CondorSubmission(path=path,cmd=cmd,owner=owner)
+                firstJob = False
+                
+            #Get recurring values
+            for line in lines:
+                if re.match("^Args", line):
+                    args = line[line.find('"')+1:len(line)-1]
+                    
+            #Create the object for a condorjob and add to condorSubmission
+            condorJob = CondorJob(job_id=job_id,args=args,condor_submission=submission)
+            submission.condorJobs.append(condorJob)
         
-        #Create a condor submission
-        #for job in jobs:
-            #Create the model for a condor job
-            
-            #Set the variables based on extracts from job
-            
-            #Add the condor job to condor submission
-        
-            
+        return submission
+    
+    #=================================================================#
