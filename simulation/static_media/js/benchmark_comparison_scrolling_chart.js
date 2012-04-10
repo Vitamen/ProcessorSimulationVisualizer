@@ -11,13 +11,14 @@ for (var i = 0; i < 10; i++) {
 	var data_item = upperStack.shift();
 	for (var parsed_key in data_item) {
 		visible_names.push(parsed_key.replace("Z","."));
-		visible_data.push(data_item[parsed_key]);
+		visible_data.push(data_item[parsed_key][0]);
 	}
 }
 
 $(document).ready(function() {
     chart = new Highcharts.Chart({
         chart: {
+        	backgroundColor: '#F8F8F8',
             renderTo: 'container',
             type: 'column',
             events: {
@@ -32,20 +33,16 @@ $(document).ready(function() {
                     	scrolling_parsed_data_point = data_object[key];
                     	scrolling_parsed_name = key.replace("Z",".");
                     };
-                    /*
                     categories.push(scrolling_parsed_name);
-                    series.addPoint(scrolling_parsed_data_point, true, true);
-                    */
-                    
-                    visible_names.push(scrolling_parsed_name);
-                    visible_data.push(scrolling_parsed_data_point);
+                    series.addPoint(scrolling_parsed_data_point);
+     
                     console.log(visible_names.length);
                     chart.redraw();
                 }
             },
         },
         title: {
-            text: '100M_np_base benchmark chart for core_insn_fetched and core_insn_fetched_onpath'
+            text: ''
         },
         xAxis: {
             categories:visible_names

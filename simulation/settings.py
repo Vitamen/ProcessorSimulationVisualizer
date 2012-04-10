@@ -156,6 +156,7 @@ CONDOR_DAEMON = {
                  'interval' : 2,       #The interval to check log file for update
 }
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 PUSHER_APP_ID = '16329'
 PUSHER_KEY = '9bc222a1d5058587fb2c'
 PUSHER_SECRET = '0b72799610efa7a8fc90'
