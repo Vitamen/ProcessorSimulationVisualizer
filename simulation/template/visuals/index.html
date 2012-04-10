@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load extra_tags %}
 //************************************************
 // Attach page-specific javascripts
 //************************************************
@@ -45,6 +45,30 @@
 //************************************************
 
 {% block onready %}
+ metric = document.getElementById('metric_id').getAttribute('value');
+ $("#metrics_list").val(metric);
+ 
+ $('.checkall').click(
+		function() {
+			$(this).parents('fieldset:eq(0)').find(':checkbox')
+					.attr('checked', this.checked);
+});
+ 
+ 
+ $('.benchmark_checkbox').each(function() {
+ 	if (benchmarks.indexOf(this.getAttribute('value')) > -1) {
+ 		$(this).attr('checked', 'yes')
+	}
+ })
+ 
+  $('#run').click(
+ 	function() {
+ 		var suite = $("select#bench").val();
+ 		suite = "#" + suite + 'form';
+ 		$(suite).find("td").each(function() {
+ 			$(this).find("input").attr("name",$(this).text());
+ 		});
+ });
  
 {% endblock %}
 
@@ -64,34 +88,71 @@
 
 {% block content %}
 <div id="metric_id" value="{{metric}}"></div>
+{% for benchmark in benchmarks %}
+	<div class="benchmark" value="{{benchmark}}"></div>
+{% endfor %}
    
 <div id="left-panel">
 	<div id="chartbox">
 		<div id="container"></div>
 	</div>
 </div>
-
-<article class="module width_3_quarter">
-	<header><h3 class="tabs_involved">Content Manager</h3>
-	<ul class="tabs">
-  		<li><a href="#tab1">Experiment(s)</a></li>
-   		<li><a href="#tab2">Metric</a></li>
-   		<li><a href="#tab3">Benchmark(s)</a></li>
-	</ul>
-	</header>
-	<div class="tab_container">
-		<div id="tab1" class="tab_content">
-
+<form id="argForm" action="" method="post"> {% csrf_token %}
+	<article class="module width_3_quarter">
+		<header><h3 class="tabs_involved">Content Manager</h3>
+		<ul class="tabs">
+	   		<li><a href="#tab2">Metric</a></li>
+	   		<li><a href="#tab3">Benchmark(s)</a></li>
+		</ul>
+		</header>
+		<div class="tab_container">
 			
-		</div>
-		<div id="tab2" class="tab_content">
-			<label>Metric</label>
-			<select style="width:92%;" id="metrics_list">
-			</select>
-		</div><!-- end of #tab2 -->
-		
-	</div><!-- end of .tab_container -->
-</article>
+			<!-- METRIC -->
+			<div id="tab2" class="tab_content">
+				<label>Metric</label>
+				<select style="width:92%;" id="metrics_list" name="metric">
+				</select>
+			</div>
+			<!-- END METRIC -->
+			
+			<!-- BENCHMARKS -->
+			<div id="tab3" class="tab_content">
+				<fieldset>
+					<label> Benchmarks
+						<div id="floatright">
+							(Select all <input type="checkbox" class="checkall">)
+						</div> </label>
+	
+					<table class="tablesorter" id="speccpuform">
+							<tr>
+							{% for bench in speccpu %}
+								<td><input class="benchmark_checkbox" type="checkbox" value="{{bench}}" name="benchmarks"/><br>{{ bench }}</br></td>
+								{% if not forloop.counter|mod:5 %}
+									</tr><tr>
+								{% endif %}
+							{% endfor %}
+							</tr>
+					</table>
+	
+					<table class="tablesorter" id="spec2006form" style="display: none;">
+							<tr>
+							{% for bench in spec2006 %}
+								<td><input type="checkbox" checked="yes" /><br />{{ bench }}</td>
+								{% if not forloop.counter|mod:5 %}
+									</tr><tr>
+								{% endif %}
+							{% endfor %}
+							</tr>
+					</table>
+				</fieldset>
+			</div>
+			<!-- END BENCHMARKS -->
+			
+		</div><!-- end of .tab_container -->
+	</article>
+	<input type="submit" id="run" value="Refresh Graph">
+</form>
+
 {% for experiment in experiments %}
    	<script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
 {% endfor %}

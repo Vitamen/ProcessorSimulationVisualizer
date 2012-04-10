@@ -2,9 +2,10 @@
 	display:inline-block;
 }
 
-#chartbox {
-	display:inline-block;
+#container {
+	display:inline;
 	margin-top: 50px;
+	width: 75%;
 }
 
 .chart rect {
