@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^getMetricsForExperiment', 'visuals.metrics.metricsForExperiment'),
     url(r'^getMetricsOfTypeForExperiments', 'visuals.metrics.getMetricsOfTypeForExperiments'),
     url(r'^setUpMetrics', 'visuals.metrics.setUpMetrics'),
+    url(r'^updateMetricType', 'visuals.metrics.updateMetricType'),
     url(r'^metrics/$', 'visuals.metrics.index'),
     url(r'^browse/$', 'experimentManager.views.browse'),
     #Url to read lines from a file

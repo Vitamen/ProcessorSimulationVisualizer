@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load extra_tags %}
+//************************************************
+// Attach page-specific javascripts
+//************************************************
+
+{% block javascript %}
+    <script src="/static_media/lib/jquery.js" type="text/javascript"></script>
+    <script src="/static_media/js/getQueryParams.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/static_media/css/chart.css" />
+    <link rel="stylesheet" type="text/css" href="/static_media/css/dropdown.css" />
+    <link rel="stylesheet" type="text/css" href="/static_media/css/control.css" />
+    
+    <script type="text/javascript" src="/static_media/lib/highcharts.js"></script>
+    <script type="text/javascript" src="/static_media/lib/exporting.js"></script>
+    <script type="text/javascript" src="/static_media/lib/d3.v2.min.js"></script>
+    <script type="text/javascript" src="/static_media/data/metrics.js"></script>
+    
+    <link rel="stylesheet" href="/static_media/css/demo_table_jui.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/static_media/js/jquery.dataTables.js"></script>
+   
+	
+{% endblock %}
+
+//************************************************
+// Javascripts to run on document ready
+//************************************************
+
+{% block onready %}
+$("#example").dataTable({
+	"bJQueryUI": true,
+	"sPaginationType": "full_numbers",
+});
+
+
+$("ul.subnav").parent().append("<span></span>"); //Only shows drop down trigger when js is enabled (Adds empty span tag after ul.subnav*)
+
+$("ul.topnav li span").click(function() { //When trigger is clicked...
+
+	//Following events are applied to the subnav itself (moving subnav up and down)
+	$(this).parent().find("ul.subnav").slideDown('fast').show(); //Drop down the subnav on click
+
+	$(this).parent().hover(function() {
+	}, function(){
+		$(this).parent().find("ul.subnav").slideUp('slow'); //When the mouse hovers out of the subnav, move it back up
+	});
+
+	//Following events are applied to the trigger (Hover events for the trigger)
+	}).hover(function() {
+		$(this).addClass("subhover"); //On hover over, add class "subhover"
+	}, function(){	//On Hover Out
+		$(this).removeClass("subhover"); //On hover out, remove class "subhover"
+});
+
+
+
+{% endblock %}
+
+//************************************************
+// Breadcrumbs
+//************************************************
+{% block breadcrumbs %}
+<div class="breadcrumbs_container">
+	<article class="breadcrumbs">
+		<a href="/chart">Metric Management</a>
+	</article>
+</div>
+{% endblock %}
+//************************************************
+// Config block contents
+//************************************************
+
+{% block content %}
+<script type="text/javascript">
+	function updateMetricType(context) {
+		console.log($(context).attr("metric_id"));
+		$.ajax({
+			  type: 'POST',
+			  url: "/updateMetricType",
+			  data: {metric_id: $(context).attr("metric_id"),
+				  	 metric_type: $(context).attr("value")}
+		});
+	}
+</script>
+<article class="module width_3_quarter">
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+	<thead>
+		<tr>
+			<th>Metric Name</th>
+			<th>Type</th>
+		</tr>	
+	</thead>
+	<tbody>
+		{% for metric in metrics %}
+		<tr>
+			<td>{{metric.metricname}}
+			
+			</td>
+			<td>
+				<ul class="topnav">
+					<li>
+						<select style="width:100%;" id="metric-type-selection" name="metric" metric_id="{{metric.metricname}}" onchange="updateMetricType(this)">
+							
+							<option {% if metric.metrictype == 'HISTOGRAM' %}
+							selected="selected" 
+							{% endif %} value="HISTOGRAM">Histogram</option>
+							<option {% if metric.metrictype == 'SCATTERPLOT' %}
+							selected="selected" 
+							{% endif %} value="SCATTERPLOT">Scatter Plot</option>
+						</select>
+				    </li>
+				</ul>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</article>
+
+{% endblock %}

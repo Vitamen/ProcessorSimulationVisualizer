@@ -9,7 +9,9 @@ def index(request):
     metric_objects = Metric.objects.all()
     metrics = []
     for metric_object in metric_objects:
-        metrics.append(metric_object.metricname)
+        metric_item = {"metricname" : metric_object.metricname, 
+                       "metrictype" : metric_object.metrictype }
+        metrics.append(metric_item)
     c = Context({
                  "metrics": metrics
     })
@@ -28,6 +30,15 @@ def getMetricsOfTypeForExperiments(request):
         'metrics': metrics
     })
     return HttpResponse(c)
+
+def updateMetricType(request):
+        metric_id = request.POST.get('metric_id')
+        metric_type = request.POST.get('metric_type')
+        metrics = Metric.objects.filter(metricname=metric_id)
+        for metric in metrics:
+            metric.metrictype = metric_type
+            metric.save()
+        return HttpResponse({}) 
 
 def setUpMetrics(request):
     metrics = Metric.objects.all()

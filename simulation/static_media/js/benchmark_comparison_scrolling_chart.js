@@ -11,8 +11,6 @@ $('.experiment').each(function() {
 })
 
 var metric_id = document.getElementById('metric_id').getAttribute('value');
-console.log(metric_id)
-var upperStack = data.slice(0);
 var visible_names = new Array();
 var visible_data = new Array();
 var lowerStack = new Array();
@@ -30,7 +28,7 @@ for (var i = 0; i < data.length; i++) {
 		}
 	}
 }
-*/
+
 
 var data_item = data[0];
 for (var parsed_key in data_item) {
@@ -39,14 +37,17 @@ for (var parsed_key in data_item) {
 		visible_names.push(parsed_name);
 	}
 }
-
+*/
 
 var all_data = [];
+console.log(datatest["100M_np_base"].length+" for 100M_np_base in benchmark");
+console.log(datatest["100M_stream_newsys_effra_fp"].length+" for 100M_stream_newsys_effra_fp in benchmark");
+
 for (var exp_i = 0; exp_i < experiments.length; exp_i++) {
 	var data = datatest[experiments[exp_i]];
 	var visible_data = [];
 	for (var i = 0; i < data.length; i++) {
-		var data_item = data.shift();
+		var data_item = data[i];
 		for (var parsed_key in data_item) {
 			parsed_name = parsed_key.replace("Z",".").replace("Z",".");
 			if (benchmarks.indexOf(parsed_name) > -1) {
@@ -59,7 +60,7 @@ for (var exp_i = 0; exp_i < experiments.length; exp_i++) {
         data: visible_data
 	})
 }
-
+console.log(all_data);
 
 $(document).ready(function() {
     chart = new Highcharts.Chart({

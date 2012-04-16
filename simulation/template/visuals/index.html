@@ -232,7 +232,9 @@ function showResponse(responseText, statusText, xhr, $form)  {
 	</article>
 	<input type="submit" id="run" value="Refresh Graph">
 </form>
-
+<script type="text/javascript">
+	var datatest = [];
+</script>
 {% for experiment in experiments %}
    	<script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
 {% endfor %}
