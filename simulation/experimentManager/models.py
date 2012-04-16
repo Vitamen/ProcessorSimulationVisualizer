@@ -44,4 +44,9 @@ METRIC_CHART_TYPE = (
                )
 class Metric(models.Model):
     metricname = models.CharField(max_length=200)
-    chart_type = models.CharField(max_length=2, choices=METRIC_CHART_TYPE)
+    metrictype = models.CharField(max_length=2, choices=METRIC_CHART_TYPE)
+
+class ExperimentMetric(models.Model):
+    metric = models.ForeignKey(Metric)
+    experiment = models.ForeignKey(Experiments)
+    

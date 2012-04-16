@@ -14,7 +14,6 @@
     <script type="text/javascript" src="/static_media/lib/highcharts.js"></script>
     <script type="text/javascript" src="/static_media/lib/exporting.js"></script>
     <script type="text/javascript" src="/static_media/lib/d3.v2.min.js"></script>
-    <script type="text/javascript" src="/static_media/data/metrics.js"></script>
     
     <link rel="stylesheet" href="/static_media/css/demo_table_jui.css" type="text/css" media="screen" />
     <script type="text/javascript" src="/static_media/js/jquery.dataTables.js"></script>
@@ -96,18 +95,22 @@ $('.experiment').each(function() {
     
     
 $("#metric-link").click(function() {
+	$.getScript("/static_media/data/metrics.js", function(data, textStatus, jqxhr) {
+		eval(data);
 
-    var options = { 
-        url: '/getMetricsForExperiment',
-        success: showResponse
-    }; 
-	$("#argForm").ajaxSubmit(options);
-
+	    var options = { 
+	        url: '/getMetricsOfTypeForExperiments',
+	        success: showResponse
+	    }; 
+		$("#argForm").ajaxSubmit(options);
+	});
 });
 
-function showResponse(responseText, statusText, xhr, $form)  {
+function showResponse(responseText, statusText, xhr, $form)  {	
+	console.log(responseText);	
 	responseText = responseText.replace(/\'/g,"\"").replace(/u/g,"")
 	var myjsonObject = JSON.parse(responseText);
+	console.log(myjsonObject);
 	if (myjsonObject.metrics.length == 0) {
 		$("#tab2 label").hide();
 		$("#metrics_list").hide();
@@ -191,6 +194,11 @@ function showResponse(responseText, statusText, xhr, $form)  {
 			
 			<!-- METRIC -->
 			<div id="tab2" class="tab_content">
+				<select style="width:92%;" id="metrics_type_dropdown" name="metric_type">
+					<option>Distribution</option>
+					<option>Scatter Plot</option>
+				</select>
+				<p/>
 				<label>Metric</label>
 				<select style="width:92%;" id="metrics_list" name="metric">
 				</select>
