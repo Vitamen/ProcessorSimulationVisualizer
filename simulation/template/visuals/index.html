@@ -16,6 +16,11 @@
     <script type="text/javascript" src="/static_media/lib/d3.v2.min.js"></script>
     <script type="text/javascript" src="/static_media/data/metrics.js"></script>
     
+    <link rel="stylesheet" href="/static_media/css/demo_table_jui.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="/static_media/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/static_media/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/static_media/js/json_parse.js"></script>
+    
     <script type="text/javascript">
 	 	$("#experiment-control-panel").hide();
 	 	$("#metric-control-panel").hide();
@@ -61,7 +66,17 @@
 	}
  })
  
-  $('#run').click(
+var all_experiments = new Array();
+$('.experiment').each(function() {
+	all_experiments.push($(this).attr('value'))
+})
+ $('.experiment_checkbox').each(function() {
+ 	if (all_experiments.indexOf($(this).attr('value')) > -1) {
+ 		$(this).attr('checked', 'yes');
+	}
+ })
+ 
+ $('#run').click(
  	function() {
  		var suite = $("select#bench").val();
  		suite = "#" + suite + 'form';
@@ -70,6 +85,47 @@
  		});
  });
  
+
+ var aSelected = [];
+     
+    /* Init the table */
+    $("#example").dataTable({
+		"bJQueryUI": true,
+		"sPaginationType": "full_numbers",
+    });
+    
+    
+$("#metric-link").click(function() {
+
+    var options = { 
+        url: '/getMetricsForExperiment',
+        success: showResponse
+    }; 
+	$("#argForm").ajaxSubmit(options);
+
+});
+
+function showResponse(responseText, statusText, xhr, $form)  {
+	responseText = responseText.replace(/\'/g,"\"").replace(/u/g,"")
+	var myjsonObject = JSON.parse(responseText);
+	if (myjsonObject.metrics.length == 0) {
+		$("#tab2 label").hide();
+		$("#metrics_list").hide();
+		$("#metric-error-message").show();
+	} else {
+		$("#tab2 label").show();
+		var metrics_list = $('#metrics_list');
+		metrics_list.empty();
+		for (var i=0; i < myjsonObject.metrics.length; i++) {
+			var metric = myjsonObject.metrics[i];
+			var metric_element = $('<option>').append(document.createTextNode(metric));
+			metrics_list.append(metric_element);
+		}
+		metrics_list.show();
+		$("#metric-error-message").hide();
+	}
+}
+
 {% endblock %}
 
 //************************************************
@@ -91,27 +147,54 @@
 {% for benchmark in benchmarks %}
 	<div class="benchmark" value="{{benchmark}}"></div>
 {% endfor %}
+
+{% for experiment in experiments_selected %}
+	<div class="experiment" value="{{experiment}}"></div>
+{% endfor %}
    
 <div id="left-panel">
 	<div id="chartbox">
 		<div id="container"></div>
 	</div>
 </div>
-<form id="argForm" action="" method="post"> {% csrf_token %}
+<form id="argForm" action="" method="post">
 	<article class="module width_3_quarter">
 		<header><h3 class="tabs_involved">Content Manager</h3>
 		<ul class="tabs">
-	   		<li><a href="#tab2">Metric</a></li>
+			<li><a href="#tab1">Experiment(s)</a></li>
+	   		<li><a href="#tab2" id="metric-link">Metric</a></li>
 	   		<li><a href="#tab3">Benchmark(s)</a></li>
 		</ul>
 		</header>
 		<div class="tab_container">
+			
+			<!-- EXPERIMENT -->
+			<div id="tab1" class="tab_content">
+				<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+					<thead>
+						<tr>
+							<th>Select</th>
+							<th>Experiment Name</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for experiment in experiments %}
+						<tr class="even" id="{{experiment}}_row">
+							<td class="center"><input class="experiment_checkbox" type="checkbox" value="{{experiment}}" name="experiments"/></td>
+							<td class="center">{{experiment}}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			<!-- END EXPERIMENT -->
 			
 			<!-- METRIC -->
 			<div id="tab2" class="tab_content">
 				<label>Metric</label>
 				<select style="width:92%;" id="metrics_list" name="metric">
 				</select>
+				<div id="metric-error-message">Please select an experiment first!</div>
 			</div>
 			<!-- END METRIC -->
 			
@@ -133,17 +216,6 @@
 							{% endfor %}
 							</tr>
 					</table>
-	
-					<table class="tablesorter" id="spec2006form" style="display: none;">
-							<tr>
-							{% for bench in spec2006 %}
-								<td><input type="checkbox" checked="yes" /><br />{{ bench }}</td>
-								{% if not forloop.counter|mod:5 %}
-									</tr><tr>
-								{% endif %}
-							{% endfor %}
-							</tr>
-					</table>
 				</fieldset>
 			</div>
 			<!-- END BENCHMARKS -->
@@ -157,5 +229,4 @@
    	<script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
 {% endfor %}
 <script type="text/javascript" src="/static_media/js/benchmark_comparison_scrolling_chart.js"></script>
-<script type="text/javascript" src="/static_media/js/metrics_dropdown.js"></script>
 {% endblock %}

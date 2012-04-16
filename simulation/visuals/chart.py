@@ -57,40 +57,27 @@ def index(request):
     "06.436.cactusADM", 
     "06.437.leslie3d"         
     ]
-    experiments = ['100M_np_base']
-#    metric = request.GET.get('metric', '')
-#    experiment = request.GET.get('experiment','')
-#    request.session.modified = True;
-#
-#    if (experiment != None) and (not experiment == ""):
-#        request.session["experiments"].append(experiment)
-#        request.session.modified = True
-#        experiments = request.session["experiments"]
-#    else:
-#        experiments = request.session["experiments"]
-#    
-#    if not metric == "":
-#        request.session["metric"] = metric;
-#    else:
-#        metric = request.session["metric"];
+    all_experiments = ['100M_np_base', '100M_stream_newsys_effra_fp'];
 
     data_root = '/Users/sophiez/Dropbox/Spring 2012/DataSimulation/ProcessorSimulationVisualizer/simulation/static_media/data/'
     
+    experiments = [];
     if request.method == 'POST':
         benchmarks = request.POST.getlist('benchmarks')
+        experiments = request.POST.getlist('experiments')
         metric = request.POST['metric']
-        print metric
     
-    for i in range(0, len(experiments)):
-        experiment = experiments[i]
-        if not os.path.exists(data_root + experiment + '/' + metric):
-            parser.extract(experiment, metric)
+    for i in range(0, len(all_experiments)):
+        experiment = all_experiments[i]
+        #if not os.path.exists(data_root + experiment + '/' + metric):
+        #    parser.extract(experiment, metric)
 
     t = loader.get_template('visuals/index.html')
     c = Context({
         'speccpu' : speccpu,
         'metric': metric,
         'benchmarks': benchmarks,
-        'experiments': experiments
+        'experiments': all_experiments,
+        'experiments_selected': experiments
     })
     return HttpResponse(t.render(c))

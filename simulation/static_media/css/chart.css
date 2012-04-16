@@ -17,3 +17,10 @@
   	margin: 1px;
   	color: black;
 }
+
+#metric-error-message {
+	font: 20px helvetica sans-serif;
+	text-align: center;
+	margin: 10px;
+	color: red;
+}

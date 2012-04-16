@@ -37,5 +37,11 @@ class Experiments(models.Model):
 class BenchmarkSet(models.Model):
     expname = models.ForeignKey(Experiments)
     bmarks = models.ForeignKey(Benchmarks)
-    
-
+   
+METRIC_CHART_TYPE = (
+               (u'000', u'HISTOGRAM'),
+               (u'001', u'SCATTERPLOT')
+               )
+class Metric(models.Model):
+    metricname = models.CharField(max_length=200)
+    chart_type = models.CharField(max_length=2, choices=METRIC_CHART_TYPE)

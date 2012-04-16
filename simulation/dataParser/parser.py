@@ -23,7 +23,7 @@ def getMetrics():
    
    
 def extract(exp,aMetric):
-    os.path.join(sampleDataPath,exp)
+    path = os.path.join(sampleDataPath,exp)
     ## Give shell command to move to correct path
     
     ## Look for Exp folder
@@ -35,7 +35,7 @@ def extract(exp,aMetric):
     FILE = open(outputDataPath + exp + "/" + aMetric + ".js","w")
     
     ##Grep for the given metric 
-    p = subprocess.Popen('cd '+ sampleDataPath + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = subprocess.Popen('cd '+ path + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
    
     ## Open json object
     FILE.write("var data = [")
@@ -43,15 +43,16 @@ def extract(exp,aMetric):
     for line in p.stdout.readlines():
         ##Now parse the line to extract the benchmark and value
         tokens = line.split("/")
+        #print tokens
         print tokens
-        simple = tokens[2].rstrip(",\n")
+        simple = tokens[1].rstrip(",\n")
         simple = simple.lstrip("sim.out:")
         simple = simple.lstrip('"' + aMetric + '"' + ":")
         simple = simple.lstrip(' ')
         if not simple.find("[") == 0:
             simple= "[" + simple + "]"
         #Create an output file
-        FILE.write("{\"" + tokens[1] + "\":" + simple + "},")
+        FILE.write("{\"" + tokens[0] + "\":" + simple + "},")
 
     FILE.write("]")
     FILE.close()
