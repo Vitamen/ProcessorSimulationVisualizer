@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^updateMetricType', 'visuals.metrics.updateMetricType'),
     url(r'^metrics/$', 'visuals.metrics.index'),
     url(r'^browse/$', 'experimentManager.views.browse'),
+    
     #Url to read lines from a file
     url(r'^read/$', 'dataParser.parser.readFile'),
     url(r'^listExp/$','dataParser.parser.getExperimentList'),

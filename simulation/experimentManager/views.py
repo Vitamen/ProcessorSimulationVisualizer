@@ -1,10 +1,12 @@
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from models import *
+from django.http import HttpResponse
+from django.template import Context,loader, RequestContext
 from datetime import datetime
-import re, json, os
+from models import BenchmarkSuite, Benchmarks, Arguments, \
+ ArgumentSet, ArgMembership, Experiments
+import re, os
 
 PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
+
 #########################################################
 # Generate the page for an experiment configuration
 #########################################################
@@ -14,11 +16,12 @@ def config(request):
     spec2006 = Benchmarks.objects.filter(suite = 2)
     
     #load page
-    dict = {
+    t = loader.get_template("experimentManager/config.html")
+    c = Context({
                  'speccpu' : speccpu,
                  'spec2006' : spec2006
-            }
-    return render_to_response('config.html', dict, context_instance=RequestContext(request))
+            })
+    return HttpResponse(t.render(c))
 
 #########################################################
 # Generate the page for an experiment configuration
@@ -59,19 +62,23 @@ def runExp(request):
     experiment.save()
     
     #Generate dictionary of things used in sampleout.html
-    dict = {
+    t = loader.get_template("experimentManager/sampleoutput.html")
+    c = Context({
             'expname' : myexpname,
             'execpath' : myexecpath,
             'bsuite' : request.POST['benchsuite'],
             'paramvaldict' : paramvaldict,
             'speccpu' : speccpu
-            }
-    return render_to_response('sampleoutput.html', dict, context_instance=RequestContext(request))
+            })
+    return HttpResponse(t.render(c))
 
 #########################################################
 # Browse data in the database
 #########################################################
 def browse(request):
     #Get the list of all experiments in the database
-    experiments = Experiments.objects.all()        
-    return render_to_response('expbrowse.html' , {'experiments' : experiments}, context_instance=RequestContext(request))
+    experiments = Experiments.objects.all() 
+    t = loader.get_template("experimentManager/expbrowse.html")
+    c = RequestContext( request,
+                        {'experiments' : experiments})
+    return HttpResponse(t.render(c))
