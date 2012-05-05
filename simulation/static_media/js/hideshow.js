@@ -32,9 +32,6 @@ $(this).text(showText);
 $(this).parent().next('.toggle').slideUp('slow');
 }
 
-//Allow check all
-
-
 // return false so any link destination is not followed
 return false;
 

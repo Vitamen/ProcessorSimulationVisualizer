@@ -6,12 +6,31 @@
 //************************************************
 
 {% block javascript %}
-<script src="js/jquery.tablesorter.min.js" type="text/javascript"></script>
-<script type="text/javascript" src="js/jquery.equalHeight.js"></script>
-<script type="text/javascript" src="js/jquery.jeditable.js"></script>
+<link rel="stylesheet" href="/static_media/css/autoSuggest.css" type="text/css"
+	media="screen" />
+<script src="/static_media/js/jquery.tablesorter.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/static_media/js/jquery.equalHeight.js"></script>
+<script type="text/javascript" src="/static_media/js/jquery.jeditable.js"></script>
+<script type="text/javascript" src="/static_media/js/jquery.autoSuggest.packed.js"></script>
 <script type="text/javascript">
+	/* Make all columns equal height */
 	$(function() {
 		$('.column').equalHeight();
+	});
+	
+	/* Add item to auto sugget to list and make ready*/
+	var itemList = new Array();
+	var tmp;
+	{% for bench in speccpu %}
+		tmp = {value: "{{ bench }}", name: "{{ bench }}"};
+		itemList.push(tmp);
+	{% endfor %}
+	var data = {items : itemList};
+	$(function() {
+		$('#excl_bench').autoSuggest(data.items,
+			{selectedItemProp: "name", 
+			searchObjProps: "name",
+			startText: "Enter benchmarks to exclude"});
 	});
 </script>
 {% endblock %}
@@ -85,9 +104,7 @@ $('.checkall').click(
  			var input = $("<input>").attr("type", "hidden").attr("name", $(this).attr('name')).val($(this).html());
  			$('#argtable').append($(input));
  		});
- });
- 
- 
+ }); 
 {% endblock %}
 
 //************************************************
@@ -106,12 +123,8 @@ $('.checkall').click(
 //************************************************
 // Config block contents
 //************************************************
-
 {% block content %}
 <section id="main" class="column">
-<h4 class="alert_info">Welcome to sample simulation data management
-	layout. This page is not yet complete.</h4>
-
 <form id="argForm" action="runExp" method="post"> {% csrf_token %}
 	<article class="module width_full">
 	<div id="accordion">
@@ -137,7 +150,7 @@ $('.checkall').click(
 
 			<!-- BENCHMARK SUITES -->
 			<fieldset>
-				<label>Benchmark suite</label> <select id="bench"
+				<label>Benchmark suite </label> <select id="bench"
 					onchange="showForm()" name="benchsuite">
 					<option value="speccpu">speccpu</option>
 					<option value="spec2006">spec2006</option>
@@ -147,41 +160,17 @@ $('.checkall').click(
 
 			<!-- BENCHMARKS -->
 			<fieldset>
-				<label> Benchmarks
-					<div id="floatright">
-						(Select all <input type="checkbox" checked="yes" class="checkall">)
-					</div> </label>
-
-				<table class="tablesorter" id="speccpuform">
-						<tr>
-						{% for bench in speccpu %}
-							<td><input type="checkbox" checked="yes" /><br>{{ bench }}</br></td>
-							{% if not forloop.counter|mod:5 %}
-								</tr><tr>
-							{% endif %}
-						{% endfor %}
-						</tr>
-				</table>
-
-				<table class="tablesorter" id="spec2006form" style="display: none;">
-						<tr>
-						{% for bench in spec2006 %}
-							<td><input type="checkbox" checked="yes" /><br />{{ bench }}</td>
-							{% if not forloop.counter|mod:5 %}
-								</tr><tr>
-							{% endif %}
-						{% endfor %}
-						</tr>
-				</table>
+				<label> Benchmarks to Exclude </label>
+				<input type="text" id="excl_bench" name="excl_bench">
 			</fieldset>
 			<!-- END BENCHMARKS -->
 
 			<!-- ARGUMENT SETS -->
 			<fieldset>
-				<label>Simulation arguments <input type="image"
-					id="leftbutton" class="delRow" src="images/icn_trash.png" title="Trash"> <input
-					type="image" id="leftbutton" class="addRow"
-					src="images/icn_new_article.png" title="Add"> </label>
+				<label>Simulation arguments <input type="Image"
+					id="leftbutton" class="delRow" src="/static_media/images/icn_trash.png" title="Trash"> <input
+					type="Image" id="leftbutton" class="addRow"
+					src="/static_media/images/icn_new_article.png" title="Add"> </label>
 				<div class="spacer"></div>
 				<table id="argtable" class="tablesorter" cellspacing="0">
 					<thead>
@@ -200,10 +189,9 @@ $('.checkall').click(
 					</tbody>
 				</table>
 				<div class="spacer"></div>
-				<input type="submit" class="config" value="Load Configuration">
-				<input type="submit" class="config" value="Save Configuration">
-				<input type="submit" class="config"
-					value="Set Default Configuration">
+				<input type="submit" class="config" value="Set Default">
+				<input type="submit" class="config" value="Load">
+				<input type="submit" class="config" value="Save">
 			</fieldset>
 			<!-- END ARGUMENT SETS -->
 			
