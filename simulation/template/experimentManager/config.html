@@ -30,7 +30,8 @@
 		$('#excl_bench').autoSuggest(data.items,
 			{selectedItemProp: "name", 
 			searchObjProps: "name",
-			startText: "Enter benchmarks to exclude"});
+			startText: "Enter benchmarks to exclude",
+			asHtmlID: "1"});
 	});
 </script>
 {% endblock %}
@@ -143,11 +144,12 @@ $('.checkall').click(
 			
 			<!-- PATH TO EXECUTABLE -->
 			<fieldset>
-				<label>Path to Executable</label> <input type="file" id="path"
+				<label>Path to CPU Binary</label> <input type="file" id="path"
 					name="path">
 			</fieldset>
 			<!-- END PATH TO EXECUTABLE -->
 
+			
 			<!-- BENCHMARK SUITES -->
 			<fieldset>
 				<label>Benchmark suite </label> <select id="bench"
@@ -158,12 +160,13 @@ $('.checkall').click(
 			</fieldset>
 			<!-- END BENCHMARK SUITES -->
 
-			<!-- BENCHMARKS -->
+			<!-- START SIZE PREF -->
 			<fieldset>
-				<label> Benchmarks to Exclude </label>
-				<input type="text" id="excl_bench" name="excl_bench">
+				<label>Size Preference</label>
+				sizepref : <br /><input type="text" name="size_pref" id="size_pref" value="100M_" />
+				size : <input type="text" name="size_pref" id="size_pref" value="100000000" />
 			</fieldset>
-			<!-- END BENCHMARKS -->
+			<!-- END SIZE PREF -->
 
 			<!-- ARGUMENT SETS -->
 			<fieldset>
@@ -201,10 +204,19 @@ $('.checkall').click(
 		</header>
 		<div class="pane">
 			<fieldset>
-				<label>Experiment Root Directory</label>
-				<div id="current_val">/afs/ece.cmu.edu/usr/cfallin/exp</div>
-				<input type="file" id="path" name="initialdir">
+				<label>Use output / error / log</label>
+				<input type="checkbox" class="usevalues" id="useOut" name="useOut" /> Use Output <br />
+				<input type="checkbox" class="usevalues" id="useErr" name="useErr" /> Use Error <br />
+				<input type="checkbox" class="usevalues" id="useLog" name="useLog" /> Use Log <br />
 			</fieldset>
+			
+			<!-- BENCHMARKS -->
+			<fieldset>
+				<label> Benchmarks to Exclude </label>
+				<input type="text" id="excl_bench" name="excl_bench">
+			</fieldset>
+			<!-- END BENCHMARKS -->
+			
 		</div>
 	</div>
 	</article>

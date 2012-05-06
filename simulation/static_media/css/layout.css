@@ -1003,6 +1003,10 @@ fieldset #bench {
 	color: red;
 }
 
+.usevalues {
+	margin-left: 10px
+}
+
 /* Data browser */
 .demo_jui {
 	margin: 10px;

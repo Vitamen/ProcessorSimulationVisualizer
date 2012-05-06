@@ -3,7 +3,7 @@ from django.template import Context,loader, RequestContext
 from datetime import datetime
 from models import BenchmarkSuite, Benchmarks, Arguments, \
  ArgumentSet, ArgMembership, Experiments
-import re, os
+import re, os, generator
 
 PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
 
@@ -37,7 +37,6 @@ def runExp(request):
     paramdict = {}
     valdict = {}
     paramvaldict = {}
-    speccpu = Benchmarks.objects.filter(suite = 1)
     
     for curVal in request.POST:
         if re.match(paramx, curVal):
@@ -61,15 +60,29 @@ def runExp(request):
     experiment = Experiments(expname=myexpname, execpath=myexecpath, bsuite=mybsuite, argset=myargset, subdate=mysubdate)
     experiment.save()
     
+    #Check additional settings and create context
+    #Call generator to start an experiment
+    '''useOut = request.POST.has_key('useOut')
+    useErr = request.POST.has_key('useErr')
+    useLog = request.POST.has_key('useLog')
+    exclBench = request.POST['as_values_1']
+    experimentVal = {
+        'useOut' : useOut,
+        'useErr' : useErr,
+        'useLog' : useLog,
+        'expname' : myexpname,
+        'execpath' : myexecpath,
+        'bsuite' : request.POST['benchsuite'],
+        'exclBench' : exclBench, 
+        'paramvaldict' : paramvaldict,
+        
+        }'''
+    generator.generate(request)
+    
+    
     #Generate dictionary of things used in sampleout.html
+    c = Context()  
     t = loader.get_template("experimentManager/sampleoutput.html")
-    c = Context({
-            'expname' : myexpname,
-            'execpath' : myexecpath,
-            'bsuite' : request.POST['benchsuite'],
-            'paramvaldict' : paramvaldict,
-            'speccpu' : speccpu
-            })
     return HttpResponse(t.render(c))
 
 #########################################################
