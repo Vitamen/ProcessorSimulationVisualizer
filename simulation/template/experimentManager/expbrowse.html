@@ -33,30 +33,26 @@
 
 {% block content %}
 <section id="main">
-<div style="text-align:center; margin-top:10px">
+<!--<div style="text-align:center; margin-top:10px">
 <input type="submit" value="Stop">
 <input type="submit" value="Restart">
 <input type="submit" value="Delete">
-</div>
+</div> -->
 <div class="demo_jui">
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
 	<thead>
 		<tr>
 			<th>Experiment Name</th>
 			<th>Submission Time</th>
-			<th>Executable Path</th>
 			<th>Benchmark Suite</th>
-			<th>Status</th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for exp in experiments %}
 		<tr class="gradeA" name="{{exp.expname}}" id="{{exp.expname}}">
 			<td class="center">{{exp.expname}}</td>
-			<td class="center">{{exp.subdate}}t</td>
-			<td class="center">{{exp.execpath}}</td>			
+			<td class="center">{{exp.subdate}}</td>		
 			<td class="center">{{exp.bsuite}}</td>	
-			<td class="center">I</td>	
 		</tr>
 		{% endfor %}
 	</tbody>

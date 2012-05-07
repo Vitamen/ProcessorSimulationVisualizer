@@ -2,6 +2,7 @@ from django.template import Context, loader
 from django.http import HttpResponse
 from experimentManager.models import *
 from dataParser import parser
+from simulation.settings import PROJECT_PATH
 import os.path
 
 def getBenchmarksFromExperiments(request):
@@ -43,9 +44,11 @@ def index(request):
         print experiments
         print metric
     
+    data_root = os.path.join(PROJECT_PATH, "static_media")
+    data_root = os.path.join(data_root, "data")
     for i in range(0, len(all_experiments)):
         experiment = all_experiments[i]
-        if not os.path.exists(data_root + experiment + '/' + metric):
+        if not os.path.exists(data_root + experiment + os.sep + metric):
             parser.extractMetricFromExperiment(experiment, metric)
 
     t = loader.get_template('visuals/index.html')

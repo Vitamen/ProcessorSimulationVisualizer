@@ -88,4 +88,3 @@ def findOrCreateMetricByName(metricName):
 class ExperimentMetric(models.Model):
     expname = models.ForeignKey(Experiments)
     metricname = models.ForeignKey(Metric)
-    

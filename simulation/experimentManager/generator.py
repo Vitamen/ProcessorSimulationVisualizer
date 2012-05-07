@@ -6,7 +6,7 @@ import os, datetime
  create corresponding directory, and connect to condor to run
  experiment
 '''
-def generate(self, request):
+def generate(request):
     dirName = decideName()
     makeCondorSub(request, dirName)
     
@@ -34,7 +34,7 @@ def decideName(self):
 '''
  Creae condor.sub file
 '''
-def makeCondorSub(self, request, dirName):
+def makeCondorSub(request, dirName):
     #Open condor.sub file
     filePath = dirName + os.sep + "condor.sub"
     f = open(filePath,"w")

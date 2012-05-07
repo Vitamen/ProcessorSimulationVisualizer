@@ -18,7 +18,7 @@
 		$('.column').equalHeight();
 	});
 	
-	/* Add item to auto sugget to list and make ready*/
+	/* Add item to auto sugget to exp_list and make ready*/
 	var itemList = new Array();
 	var tmp;
 	{% for bench in speccpu %}
@@ -32,6 +32,26 @@
 			searchObjProps: "name",
 			startText: "Enter benchmarks to exclude",
 			asHtmlID: "1"});
+	});
+	
+	/* Add item to auto sugget to exp_list and make ready*/
+	var itemList2 = new Array();
+	var tmp;
+	tmp = {value: "np_base", name: "np_base"};
+	itemList2.push(tmp);
+	tmp = {value: "np_effra", name: "np_effra"};
+	itemList2.push(tmp);
+	tmp = {value: "newsys3_profilt5_effr", name: "newsys3_profilt5_effr"};
+	itemList2.push(tmp);
+	tmp = {value: "newsys3_ra", name: "newsys3_ra"};
+	itemList2.push(tmp);
+	var data2 = {items : itemList2};
+	$(function() {
+		$('#exp_type').autoSuggest(data2.items,
+			{selectedItemProp: "name", 
+			searchObjProps: "name",
+			startText: "Enter experiment types to run",
+			asHtmlID: "2"});
 	});
 </script>
 {% endblock %}
@@ -48,17 +68,12 @@ $("#accordion").tabs("#accordion div.pane", {
 	initialIndex : null
 });
 
-// ********** Check all checkboxes on start-up **********
+// ******** Focus on experiment name on start ********
+document.getElementById('expname').focus();
 
-$('.checkall').click(
-		function() {
-			$(this).parents('fieldset:eq(0)').find(':checkbox')
-					.attr('checked', this.checked);
-});
- editButtons();
- 
 // ********** Dynamically add rows to table **********
 
+editButtons();
  var i = 1;
  $('.addRow').click(
 		 function() {
@@ -116,7 +131,7 @@ $('.checkall').click(
 	<article class="breadcrumbs">
 		<a href="/config">New Simulation</a>
 		<div class="breadcrumb_divider"></div>
-		<a href="#">Condor Status</a>
+		<a href="/config/getCondor">Condor Status</a>
 	</article>
 </div>
 {% endblock %}
@@ -126,7 +141,7 @@ $('.checkall').click(
 //************************************************
 {% block content %}
 <section id="main" class="column">
-<form id="argForm" action="runExp" method="post"> {% csrf_token %}
+<form name="argForm" id="argForm" action="runExp" method="post"> {% csrf_token %}
 	<article class="module width_full">
 	<div id="accordion">
 		<header>
@@ -159,15 +174,29 @@ $('.checkall').click(
 				</select>
 			</fieldset>
 			<!-- END BENCHMARK SUITES -->
-
+			
+			<!-- BENCHMARKS -->
+			<!-- <fieldset>
+				<label> Benchmarks to Exclude </label>
+				<input type="text" id="excl_bench" name="excl_bench">
+			</fieldset> -->
+			<!-- END BENCHMARKS -->
+			
 			<!-- START SIZE PREF -->
 			<fieldset>
 				<label>Size Preference</label>
-				sizepref : <br /><input type="text" name="size_pref" id="size_pref" value="100M_" />
-				size : <input type="text" name="size_pref" id="size_pref" value="100000000" />
+				<span style="margin-left:10px">sizepref : </span><br /><input type="text" name="size_pref" id="size_pref" value="100M_" />
+				<span style="margin-left:10px">size :</span><input type="text" name="size" id="size" value="100000000" />
 			</fieldset>
 			<!-- END SIZE PREF -->
 
+			<!-- START EXPERIMENT TYPE -->
+			<fieldset>
+				<label>Experiment Type</label>
+				<input type="text" id="exp_type" name="exp_type">
+			</fieldset>
+			<!-- END SIZE PREF -->
+			
 			<!-- ARGUMENT SETS -->
 			<fieldset>
 				<label>Simulation arguments <input type="Image"
@@ -209,14 +238,6 @@ $('.checkall').click(
 				<input type="checkbox" class="usevalues" id="useErr" name="useErr" /> Use Error <br />
 				<input type="checkbox" class="usevalues" id="useLog" name="useLog" /> Use Log <br />
 			</fieldset>
-			
-			<!-- BENCHMARKS -->
-			<fieldset>
-				<label> Benchmarks to Exclude </label>
-				<input type="text" id="excl_bench" name="excl_bench">
-			</fieldset>
-			<!-- END BENCHMARKS -->
-			
 		</div>
 	</div>
 	</article>

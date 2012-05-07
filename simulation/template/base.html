@@ -16,6 +16,7 @@
 	type="text/javascript"></script>
 <script src="http://cdn.jquerytools.org/1.2.6/full/jquery.tools.min.js"></script>
 <script src="/static_media/js/hideshow.js" type="text/javascript"></script>
+<script src="/static_media/js/jquery.hotkeys.js" type="text/javascript"></script>
 {% block javascript %}
 {% endblock %}
 
@@ -27,8 +28,6 @@
 				$(".tab_content").hide(); //Hide all content
 				$("ul.tabs li:first").addClass("active").show(); //Activate first tab
 				$(".tab_content:first").show(); //Show first tab content
-				{% block onready %}
-				{% endblock %}
 				
 				//On Click Event
 				$("ul.tabs li").click(function() {
@@ -41,7 +40,22 @@
 					$(activeTab).fadeIn(); //Fade in the active ID content
 					return false;
 				});
-
+				
+				//Add keyboard shortcuts
+				var baseUrl = getBaseURL();
+				jQuery(document).bind('keydown', 'shift+n',function ()
+						{window.location = baseUrl + "config"});
+				jQuery(document).bind('keydown', 'shift+c',function ()
+						{window.location = baseUrl + "config/getCondor"});
+				jQuery(document).bind('keydown', 'shift+b',function ()
+						{window.location = baseUrl + "browse"});
+				jQuery(document).bind('keydown', 'shift+m',function ()
+						{window.location = baseUrl + "metrics"});
+				jQuery(document).bind('keydown', 'shift+e',function ()
+						{window.location = baseUrl + "chart"});
+				
+				{% block onready %}
+				{% endblock %}
 			});
 </script>
 <script type="text/javascript">
@@ -89,7 +103,7 @@
 		<h3>Run Simulation</h3>
 		<ul class="toggle">
 			<li class="icn_new_article"><a href="/config">New Simulation</a></li>
-			<li class="icn_security"><a href="#">Condor Status</a></li>
+			<li class="icn_security"><a href="/config/getCondor">Condor Status</a></li>
 		</ul>
 		<h3>Data Management</h3>
 		<ul class="toggle">

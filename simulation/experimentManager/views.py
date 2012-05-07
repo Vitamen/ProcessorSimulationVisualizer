@@ -27,64 +27,49 @@ def config(request):
 # Generate the page for an experiment configuration
 #########################################################
 def runExp(request):
-    #Create argument set for this experiment set
-    curArgSet = ArgumentSet(setname=request.POST['expname'])
-    curArgSet.save()
     
-    #Create arguments and save to argument set
+    #RegEx for recognizing arguments
     paramx = re.compile('param([\d_]+)')
     valx = re.compile("^val([\d_]+)")
-    paramdict = {}
-    valdict = {}
-    paramvaldict = {}
-    
-    for curVal in request.POST:
-        if re.match(paramx, curVal):
-            numArg = paramx.search(curVal).group(1)
-            paramdict[numArg] = request.POST[curVal]
-        elif re.match(valx, curVal):
-            numArg = valx.search(curVal).group(1)
-            valdict[numArg] = request.POST[curVal]
-    for curVal in paramdict:
-        p = Arguments(argname=paramdict[curVal], value=valdict[curVal])
-        paramvaldict[paramdict[curVal]] = valdict[curVal]
-        p.save()
-        argmember = ArgMembership(setname=curArgSet,argname=p)
-        argmember.save()
     
     #Create experiment and save to list
-    myexpname = request.POST['expname']
-    myexecpath = request.POST['path']
-    mybsuite = BenchmarkSuite.objects.get(suite=request.POST['benchsuite'])
-    mysubdate = datetime.now()
-    experiment = Experiments(expname=myexpname, execpath=myexecpath, bsuite=mybsuite, argset=myargset, subdate=mysubdate)
-    experiment.save()
-    
-    #Check additional settings and create context
-    #Call generator to start an experiment
-    '''useOut = request.POST.has_key('useOut')
-    useErr = request.POST.has_key('useErr')
-    useLog = request.POST.has_key('useLog')
-    exclBench = request.POST['as_values_1']
-    experimentVal = {
-        'useOut' : useOut,
-        'useErr' : useErr,
-        'useLog' : useLog,
-        'expname' : myexpname,
-        'execpath' : myexecpath,
-        'bsuite' : request.POST['benchsuite'],
-        'exclBench' : exclBench, 
-        'paramvaldict' : paramvaldict,
+    baseExpName = request.POST['size_pref']
+    expTypes = [x.strip() for x in request.POST["as_values_2"].split(",")]
+    for expType in expTypes:
+        if expType == "" : continue
+        myexpName = request.POST['expname'] + baseExpName + expType
         
-        }'''
-    generator.generate(request)
-    
+        '''#Create argset
+        curArgSet = ArgumentSet(setname=myexpName)
+        curArgSet.save()'''
+        
+        #Create argument set for this experiment set
+        paramdict = {}
+        valdict = {}
+        paramvaldict = {}
+        for curVal in request.POST:
+            if re.match(paramx, curVal):
+                numArg = paramx.search(curVal).group(1)
+                paramdict[numArg] = request.POST[curVal]
+            elif re.match(valx, curVal):
+                    numArg = valx.search(curVal).group(1)
+                    valdict[numArg] = request.POST[curVal]
+        '''for curVal in paramdict:
+            p = Arguments(argname=paramdict[curVal], value=valdict[curVal])
+            paramvaldict[paramdict[curVal]] = valdict[curVal]
+            p.save()
+            argmember = ArgMembership(setname=curArgSet,argname=p)
+            argmember.save()'''
+        experiment = Experiments(expname=myexpName, execpath="",
+                                bsuite=BenchmarkSuite.objects.get(suite=request.POST['benchsuite']), 
+                                subdate= datetime.now())
+        experiment.save()
     
     #Generate dictionary of things used in sampleout.html
     c = Context()  
     t = loader.get_template("experimentManager/sampleoutput.html")
     return HttpResponse(t.render(c))
-
+    
 #########################################################
 # Browse data in the database
 #########################################################
@@ -94,4 +79,12 @@ def browse(request):
     t = loader.get_template("experimentManager/expbrowse.html")
     c = RequestContext( request,
                         {'experiments' : experiments})
+    return HttpResponse(t.render(c))
+
+#########################################################
+# Get the static page for Condor
+#########################################################
+def getCondor(request):
+    c = Context()  
+    t = loader.get_template("experimentManager/sampleoutput.html")
     return HttpResponse(t.render(c))
