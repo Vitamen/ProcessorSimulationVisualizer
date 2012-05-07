@@ -40,8 +40,6 @@ for (var parsed_key in data_item) {
 */
 
 var all_data = [];
-console.log(datatest["100M_np_base"].length+" for 100M_np_base in benchmark");
-console.log(datatest["100M_stream_newsys_effra_fp"].length+" for 100M_stream_newsys_effra_fp in benchmark");
 
 for (var exp_i = 0; exp_i < experiments.length; exp_i++) {
 	var data = datatest[experiments[exp_i]];
@@ -51,6 +49,7 @@ for (var exp_i = 0; exp_i < experiments.length; exp_i++) {
 		for (var parsed_key in data_item) {
 			parsed_name = parsed_key.replace("Z",".").replace("Z",".");
 			if (benchmarks.indexOf(parsed_name) > -1) {
+				visible_names.push(parsed_name);
 				visible_data.push(data_item[parsed_key][0]);
 			}
 		}
@@ -130,14 +129,5 @@ $(document).ready(function() {
             }
         },
         series: all_data
-        /*
-        	[{
-            name: 'Experiment 1',
-            data: visible_data
-        },
-        ]
-        */
     });
-    console.log(chart.series.data);
-    console.log("done");
 });
