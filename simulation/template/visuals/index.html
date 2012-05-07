@@ -86,48 +86,7 @@ $('.experiment').each(function() {
  
 
  var aSelected = [];
-     
-    /* Init the table */
-    $("#example").dataTable({
-		"bJQueryUI": true,
-		"sPaginationType": "full_numbers",
-    });
     
-    
-$("#metric-link").click(function() {
-	$.getScript("/static_media/data/metrics.js", function(data, textStatus, jqxhr) {
-		eval(data);
-
-	    var options = { 
-	        url: '/getMetricsOfTypeForExperiments',
-	        success: showResponse
-	    }; 
-		$("#argForm").ajaxSubmit(options);
-	});
-});
-
-function showResponse(responseText, statusText, xhr, $form)  {	
-	console.log(responseText);	
-	responseText = responseText.replace(/\'/g,"\"").replace(/u/g,"")
-	var myjsonObject = JSON.parse(responseText);
-	console.log(myjsonObject);
-	if (myjsonObject.metrics.length == 0) {
-		$("#tab2 label").hide();
-		$("#metrics_list").hide();
-		$("#metric-error-message").show();
-	} else {
-		$("#tab2 label").show();
-		var metrics_list = $('#metrics_list');
-		metrics_list.empty();
-		for (var i=0; i < myjsonObject.metrics.length; i++) {
-			var metric = myjsonObject.metrics[i];
-			var metric_element = $('<option>').append(document.createTextNode(metric));
-			metrics_list.append(metric_element);
-		}
-		metrics_list.show();
-		$("#metric-error-message").hide();
-	}
-}
 
 {% endblock %}
 
@@ -146,6 +105,9 @@ function showResponse(responseText, statusText, xhr, $form)  {
 //************************************************
 
 {% block content %}
+
+
+
 <div id="metric_id" value="{{metric}}"></div>
 {% for benchmark in benchmarks %}
 	<div class="benchmark" value="{{benchmark}}"></div>
@@ -166,7 +128,7 @@ function showResponse(responseText, statusText, xhr, $form)  {
 		<ul class="tabs">
 			<li><a href="#tab1">Experiment(s)</a></li>
 	   		<li><a href="#tab2" id="metric-link">Metric</a></li>
-	   		<li><a href="#tab3">Benchmark(s)</a></li>
+	   		<li><a href="#tab3" id="benchmark-link">Benchmark(s)</a></li>
 		</ul>
 		</header>
 		<div class="tab_container">
@@ -193,10 +155,10 @@ function showResponse(responseText, statusText, xhr, $form)  {
 			<!-- END EXPERIMENT -->
 			
 			<!-- METRIC -->
-			<div id="tab2" class="tab_content">
-				<select style="width:92%;" id="metrics_type_dropdown" name="metric_type">
-					<option>Distribution</option>
-					<option>Scatter Plot</option>
+			<div id="tab2" class="tab_content">			
+				<select style="width:92%;" id="metrics_type_dropdown" name="metric_type" onchange="selectMetricType(this)">
+					<option value="HISTOGRAM">Distribution</option>
+					<option value="SCATTERPLOT">Scatter Plot</option>
 				</select>
 				<p/>
 				<label>Metric</label>
@@ -214,15 +176,8 @@ function showResponse(responseText, statusText, xhr, $form)  {
 							(Select all <input type="checkbox" class="checkall">)
 						</div> </label>
 	
-					<table class="tablesorter" id="speccpuform">
-							<tr>
-							{% for bench in speccpu %}
-								<td><input class="benchmark_checkbox" type="checkbox" value="{{bench}}" name="benchmarks"/><br>{{ bench }}</br></td>
-								{% if not forloop.counter|mod:5 %}
-									</tr><tr>
-								{% endif %}
-							{% endfor %}
-							</tr>
+					<table class="tablesorter" id="benchmark_form">
+
 					</table>
 				</fieldset>
 			</div>
@@ -232,6 +187,8 @@ function showResponse(responseText, statusText, xhr, $form)  {
 	</article>
 	<input type="submit" id="run" value="Refresh Graph">
 </form>
+<script type="text/javascript" src="/static_media/visuals/js/metrics_tab.js"></script>
+<script type="text/javascript" src="/static_media/visuals/js/benchmarks_tab.js"></script>
 <script type="text/javascript">
 	var datatest = [];
 </script>

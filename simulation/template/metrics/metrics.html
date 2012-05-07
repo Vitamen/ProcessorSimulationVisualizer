@@ -101,12 +101,20 @@ $("ul.topnav li span").click(function() { //When trigger is clicked...
 					<li>
 						<select style="width:100%;" id="metric-type-selection" name="metric" metric_id="{{metric.metricname}}" onchange="updateMetricType(this)">
 							
-							<option {% if metric.metrictype == 'HISTOGRAM' %}
+							<option 
+							{% if metric.metrictype == 'HISTOGRAM' %}
 							selected="selected" 
 							{% endif %} value="HISTOGRAM">Histogram</option>
-							<option {% if metric.metrictype == 'SCATTERPLOT' %}
+							
+							<option 
+							{% if metric.metrictype == 'SCATTERPLOT' %}
 							selected="selected" 
 							{% endif %} value="SCATTERPLOT">Scatter Plot</option>
+							
+							<option 
+							{% if metric.metrictype == 'NOPLOT' %}
+							selected="selected" 
+							{% endif %} value="NOPLOT">No Plot</option>
 						</select>
 				    </li>
 				</ul>

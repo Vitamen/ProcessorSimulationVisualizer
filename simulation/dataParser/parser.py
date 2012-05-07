@@ -1,6 +1,7 @@
 import json
 import os.path
 import subprocess
+from experimentManager.models import *
 
 sampleDataPath = 'dataParser/SampleData/'
 outputDataPath = 'static_media/data/'
@@ -18,11 +19,72 @@ def getExperimentList(self):
 def getMetrics():
     metricList = []
     for line in open('dataParser/metricNameData.txt','r').readlines():
-        metricList.append(line)
-    return metricList
+        metriclist.append(line)
+    return metriclist
+
+def parseExperiment (exp):
+    exp = "100M_stream_effra"
+    benchmarkSuite, created = BenchmarkSuite.objects.get_or_create(suite="suite")
+    experiment_object = findOrCreateExperimentByName(exp)
+    path = os.path.join(sampleDataPath,exp)
+    ## Look for Exp folder
+    #if not os.path.exists(outputDataPath + exp):
+    #    os.makedirs(outputDataPath + exp)
+    
+    ## Look for all the benchmarks
+    benchmarksProcess = subprocess.Popen("cd "+ path+"; ls;", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    oneBenchmark = "";
+    for line in benchmarksProcess.stdout.readlines():
+        tokens = line.split(" ")
+        benchmarktoken = tokens[0].rstrip("\n")
+        benchmark_object = findOrCreateBenchmarkByName(benchmarktoken)
+        matchingBenchmarks = ExperimentBenchmark.objects.filter(expname=exp, bmname=benchmarktoken)
+        oneBenchmark = benchmarktoken
+        if len(matchingBenchmarks) == 0:
+            experimentBenchmark_object = ExperimentBenchmark(expname=experiment_object, bmname=benchmark_object)
+            experimentBenchmark_object.save()
+    
+    path = os.path.join(sampleDataPath,exp,oneBenchmark)
+    metricsProcess = subprocess.Popen("cd "+path+"; grep '' *", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in metricsProcess.stdout.readlines():
+        tokens = line.split("\"")
+        if len(tokens) > 1:
+            metricToken = tokens[1]
+            metric_object = findOrCreateMetricByName(metricToken)
+            matchingMetrics = ExperimentMetric.objects.filter(expname=exp, metricname=metricToken)
+            if len(matchingMetrics) == 0:
+                experimentMetric_object = ExperimentMetric(expname=experiment_object, metricname=metric_object)
+                experimentMetric_object.save()
+    print ExperimentMetric.objects.count()
+
    
-   
-def extract(exp,aMetric):
+def extractBenchmarksFromExperiments (exp):
+    exp = "100M_np_base"
+    benchmarkSuite, created = BenchmarkSuite.objects.get_or_create(suite="suite")
+    experiment_object = findOrCreateExperimentByName(exp)
+    path = os.path.join(sampleDataPath,exp)
+    print path
+    ## Look for Exp folder
+    #if not os.path.exists(outputDataPath + exp):
+    #    os.makedirs(outputDataPath + exp)
+    
+    ## Look for all the benchmarks
+    print path
+    benchmarksProcess = subprocess.Popen("cd "+ path+"; ls;", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    
+    for line in benchmarksProcess.stdout.readlines():
+        tokens = line.split(" ")
+        benchmarktoken = tokens[0].rstrip("\n")
+        print "[" + benchmarktoken + "]"
+        benchmark_object = findOrCreateBenchmarkByName(benchmarktoken)
+        matchingBenchmarks = ExperimentBenchmark.objects.filter(expname=exp, bmname=benchmarktoken)
+        if len(matchingBenchmarks) == 0:
+            experimentBenchmark_object = ExperimentBenchmark(expname=experiment_object, bmname=benchmark_object)
+            experimentBenchmark_object.save()
+    print ExperimentBenchmark.objects.count()
+
+def extractMetricFromExperiment (exp,aMetric):
+
     path = os.path.join(sampleDataPath,exp)
     ## Give shell command to move to correct path
     
@@ -38,7 +100,7 @@ def extract(exp,aMetric):
     grepRes = subprocess.Popen('cd '+ path + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
    
     ## Open json object
-    FILE.write("var data = [")
+    FILE.write("datatest[\""+exp+"\"] = [" )
     ##Parse and write data
     for line in grepRes.stdout.readlines():
         ##Now parse the line to extract the benchmark and value
@@ -72,4 +134,4 @@ def getDataFor(self):
     for aMetric in allMetrics:
     #    print aMetric
     #aMetric = "version"
-        extract(exp,aMetric.rstrip('\n'))  
+        extractMetricFromExperiment(exp,aMetric.rstrip('\n'))  
