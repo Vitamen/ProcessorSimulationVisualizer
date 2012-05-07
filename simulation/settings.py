@@ -159,3 +159,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 PUSHER_APP_ID = '16329'
 PUSHER_KEY = '9bc222a1d5058587fb2c'
 PUSHER_SECRET = '0b72799610efa7a8fc90'
+
+#These configurations are used by experiment manager
+EXP_ROOT_DIR =  os.path.join(PROJECT_PATH,"experiments")
+EXECUTABLE_PATH = EXP_ROOT_DIR + os.sep + 'invoke-ringo.rb'

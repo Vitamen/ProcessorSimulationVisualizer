@@ -2,3 +2,4 @@
 .pydevproject
 .metadata
 /.condor.sub.swp
+.tmp

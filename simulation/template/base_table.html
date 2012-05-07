@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+//************************************************
+// Attach page-specific javascripts
+//************************************************
+
+{% block javascript %}
+<link rel="stylesheet" href="/static_media/css/demo_table_jui.css" type="text/css"
+	media="screen" />
+<link rel="stylesheet" href="/static_media/css/jquery-ui-1.8.4.custom.css" type="text/css"
+	media="screen" />
+<script type="text/javascript" src="/static_media/js/jquery.dataTables.js"></script>
+{% block javascript_table %}
+{% endblock %}
+{% endblock %}
+
+//************************************************
+// Javascripts to run on document ready
+//************************************************
+
+{% block onready %}
+$(document).ready(function() {
+
+	/* Add a click handler to the rows - this could be used as a callback */
+    $("#example tbody tr").click( function( e ) {
+        if ( $(this).hasClass('row_selected') ) {
+            $(this).removeClass('row_selected');
+        }
+        else {
+            $(this).addClass('row_selected');
+        }
+    });
+    
+    /* Add a click handler for the delete row */
+    $('#delete').click( function() {
+        var anSelected = fnGetSelected( oTable );
+        if ( anSelected.length !== 0 ) {
+            oTable.fnDeleteRow( anSelected[0] );
+        }
+    } );
+    
+	oTable = $('#example').dataTable({
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers",
+		});
+} );
+
+/* Get the rows which are currently selected */
+function fnGetSelected( oTableLocal )
+{
+    return oTableLocal.$('tr.row_selected');
+}
+
+{% block onready_table %}
+{% endblock %}
+{% endblock %}
+
+//************************************************
+// Breadcrumbs
+//************************************************
+
+//************************************************
+// Config block contents
+//************************************************
+{% block content %}
+{% endblock %}

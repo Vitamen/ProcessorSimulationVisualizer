@@ -1,10 +1,12 @@
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from models import *
+from django.http import HttpResponse
+from django.template import Context,loader, RequestContext
 from datetime import datetime
-import re, json, os
+from models import BenchmarkSuite, Benchmarks, Arguments, \
+ ArgumentSet, ArgMembership, Experiments
+import re, os, generator
 
 PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
+
 #########################################################
 # Generate the page for an experiment configuration
 #########################################################
@@ -14,11 +16,12 @@ def config(request):
     spec2006 = Benchmarks.objects.filter(suite = 2)
     
     #load page
-    dict = {
+    t = loader.get_template("experimentManager/config.html")
+    c = Context({
                  'speccpu' : speccpu,
                  'spec2006' : spec2006
-            }
-    return render_to_response('config.html', dict, context_instance=RequestContext(request))
+            })
+    return HttpResponse(t.render(c))
 
 #########################################################
 # Generate the page for an experiment configuration
@@ -34,7 +37,6 @@ def runExp(request):
     paramdict = {}
     valdict = {}
     paramvaldict = {}
-    speccpu = Benchmarks.objects.filter(suite = 1)
     
     for curVal in request.POST:
         if re.match(paramx, curVal):
@@ -58,20 +60,38 @@ def runExp(request):
     experiment = Experiments(expname=myexpname, execpath=myexecpath, bsuite=mybsuite, argset=myargset, subdate=mysubdate)
     experiment.save()
     
+    #Check additional settings and create context
+    #Call generator to start an experiment
+    '''useOut = request.POST.has_key('useOut')
+    useErr = request.POST.has_key('useErr')
+    useLog = request.POST.has_key('useLog')
+    exclBench = request.POST['as_values_1']
+    experimentVal = {
+        'useOut' : useOut,
+        'useErr' : useErr,
+        'useLog' : useLog,
+        'expname' : myexpname,
+        'execpath' : myexecpath,
+        'bsuite' : request.POST['benchsuite'],
+        'exclBench' : exclBench, 
+        'paramvaldict' : paramvaldict,
+        
+        }'''
+    generator.generate(request)
+    
+    
     #Generate dictionary of things used in sampleout.html
-    dict = {
-            'expname' : myexpname,
-            'execpath' : myexecpath,
-            'bsuite' : request.POST['benchsuite'],
-            'paramvaldict' : paramvaldict,
-            'speccpu' : speccpu
-            }
-    return render_to_response('sampleoutput.html', dict, context_instance=RequestContext(request))
+    c = Context()  
+    t = loader.get_template("experimentManager/sampleoutput.html")
+    return HttpResponse(t.render(c))
 
 #########################################################
 # Browse data in the database
 #########################################################
 def browse(request):
     #Get the list of all experiments in the database
-    experiments = Experiments.objects.all()        
-    return render_to_response('expbrowse.html' , {'experiments' : experiments}, context_instance=RequestContext(request))
+    experiments = Experiments.objects.all() 
+    t = loader.get_template("experimentManager/expbrowse.html")
+    c = RequestContext( request,
+                        {'experiments' : experiments})
+    return HttpResponse(t.render(c))
