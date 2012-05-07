@@ -28,8 +28,8 @@ def config(request):
 #########################################################
 def runExp(request):
     #Create argument set for this experiment set
-    myargset = ArgumentSet(setname=request.POST['expname'])
-    myargset.save()
+    curArgSet = ArgumentSet(setname=request.POST['expname'])
+    curArgSet.save()
     
     #Create arguments and save to argument set
     paramx = re.compile('param([\d_]+)')
@@ -49,7 +49,7 @@ def runExp(request):
         p = Arguments(argname=paramdict[curVal], value=valdict[curVal])
         paramvaldict[paramdict[curVal]] = valdict[curVal]
         p.save()
-        argmember = ArgMembership(setname=myargset,argname=p)
+        argmember = ArgMembership(setname=curArgSet,argname=p)
         argmember.save()
     
     #Create experiment and save to list

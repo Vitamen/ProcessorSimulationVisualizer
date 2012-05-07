@@ -1,9 +1,17 @@
 '''
 Created on Feb 29, 2012
 
+The classes in this file represents a condor submission or a 
+condor job submitted to Condor. It will store the relevant information
+for each condor submission.
 @author: songdet
 '''
 
+
+'''
+This class represents one Condor submission, consisting of multiple
+condor jobs.
+'''
 class CondorSubmission:
     
     def __init__(self, path, owner, cmd, condorJobs=[]):
@@ -21,6 +29,9 @@ class CondorSubmission:
 
 #=================================================================#
 
+'''
+This class represents a single condor job running by Condor
+'''
 class CondorJob:
     
     def __init__(self, job_id, args, condor_submission,

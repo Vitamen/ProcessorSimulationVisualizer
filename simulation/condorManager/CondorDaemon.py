@@ -67,7 +67,7 @@ class CondorDaemon(threading.Thread):
         #Time to update interval & time to wait if the log is currently
         #being updated by condor
         interval = CONDOR_DAEMON['interval']
-        waitTime = 2
+        waitTime = CONDOR_DAEMON['waitTime']
         
         #Loop the daemon, checking update every interval time
         #If new changes are found, call observer with the changes

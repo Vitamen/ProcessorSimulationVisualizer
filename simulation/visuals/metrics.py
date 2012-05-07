@@ -1,7 +1,5 @@
 from django.template import Context, loader
 from django.http import HttpResponse
-from django.http import QueryDict
-from django.utils import simplejson
 from experimentManager.models import *
 
 def index(request):
@@ -32,13 +30,13 @@ def getMetricsOfTypeForExperiments(request):
     return HttpResponse(c)
 
 def updateMetricType(request):
-        metric_id = request.POST.get('metric_id')
-        metric_type = request.POST.get('metric_type')
-        metrics = Metric.objects.filter(metricname=metric_id)
-        for metric in metrics:
-            metric.metrictype = metric_type
-            metric.save()
-        return HttpResponse({}) 
+    metric_id = request.POST.get('metric_id')
+    metric_type = request.POST.get('metric_type')
+    metrics = Metric.objects.filter(metricname=metric_id)
+    for metric in metrics:
+        metric.metrictype = metric_type
+        metric.save()
+    return HttpResponse({}) 
 
 def setUpMetrics(request):
     metrics = Metric.objects.all()

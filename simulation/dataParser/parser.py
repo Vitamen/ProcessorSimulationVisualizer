@@ -16,10 +16,10 @@ def getExperimentList(self):
 
 ## This method will provide a list of all metrics that are available      
 def getMetrics():
-    metriclist = []
+    metricList = []
     for line in open('dataParser/metricNameData.txt','r').readlines():
-        metriclist.append(line)
-    return metriclist
+        metricList.append(line)
+    return metricList
    
    
 def extract(exp,aMetric):
@@ -35,12 +35,12 @@ def extract(exp,aMetric):
     FILE = open(outputDataPath + exp + "/" + aMetric + ".js","w")
     
     ##Grep for the given metric 
-    p = subprocess.Popen('cd '+ path + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    grepRes = subprocess.Popen('cd '+ path + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
    
     ## Open json object
     FILE.write("var data = [")
     ##Parse and write data
-    for line in p.stdout.readlines():
+    for line in grepRes.stdout.readlines():
         ##Now parse the line to extract the benchmark and value
         tokens = line.split("/")
         #print tokens

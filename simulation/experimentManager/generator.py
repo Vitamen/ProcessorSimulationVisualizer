@@ -1,19 +1,19 @@
 from simulation.settings import EXP_ROOT_DIR, EXECUTABLE_PATH
 import os, datetime
 
-#########################################################
-# Responsible for converting dictionary inputs into log file,
-# create corresponding directory, and connect to condor to run
-# experiment
-#########################################################
+'''
+ Responsible for converting dictionary inputs into log file,
+ create corresponding directory, and connect to condor to run
+ experiment
+'''
 def generate(self, request):
     dirName = decideName()
     makeCondorSub(request, dirName)
     
-#########################################################
-# Decide on directory name to create for this experiment
-# Use the date and add number from 1 upward
-#########################################################
+'''
+ Decide on directory name to create for this experiment
+ Use the date and add number from 1 upward
+'''
 def decideName(self):
     curDate = datetime.datetime.now()
     curMonth = "%02d" % curDate.month
@@ -31,9 +31,9 @@ def decideName(self):
             break
         i = i + 1
 
-#########################################################
-# Creae condor.sub file
-#########################################################
+'''
+ Creae condor.sub file
+'''
 def makeCondorSub(self, request, dirName):
     #Open condor.sub file
     filePath = dirName + os.sep + "condor.sub"

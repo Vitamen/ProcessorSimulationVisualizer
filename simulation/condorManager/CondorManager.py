@@ -138,8 +138,8 @@ class Manager(object):
     def getModels(self,path,retVal):
         
         #Split jobs
-        retVal = retVal.strip()
-        jobs = re.split("\*\* Proc ", retVal)
+        modelValue = retVal.strip()
+        jobs = re.split("\*\* Proc ", modelValue)
         jobs = jobs[1:]
         submission = None
 

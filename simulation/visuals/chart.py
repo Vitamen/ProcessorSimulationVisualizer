@@ -1,7 +1,6 @@
 from django.template import Context, loader
 from django.http import HttpResponse
 from dataParser import parser
-import os
 
 def index(request):
     request.session["experiments"] = []
@@ -58,8 +57,6 @@ def index(request):
     "06.437.leslie3d"         
     ]
     all_experiments = ['100M_np_base', '100M_stream_newsys_effra_fp'];
-
-    data_root = '/Users/sophiez/Dropbox/Spring 2012/DataSimulation/ProcessorSimulationVisualizer/simulation/static_media/data/'
     
     experiments = [];
     if request.method == 'POST':

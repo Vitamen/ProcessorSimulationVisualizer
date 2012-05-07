@@ -153,6 +153,7 @@ LOGGING = {
 #These configurations are related to condor manager module
 CONDOR_DAEMON = {
                  'interval' : 2,       #The interval to check log file for update
+                 'waitTime' : 2
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
