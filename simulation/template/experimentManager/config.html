@@ -10,7 +10,6 @@
 	media="screen" />
 <script src="/static_media/js/jquery.tablesorter.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="/static_media/js/jquery.equalHeight.js"></script>
-<script type="text/javascript" src="/static_media/js/jquery.jeditable.js"></script>
 <script type="text/javascript" src="/static_media/js/jquery.autoSuggest.packed.js"></script>
 <script type="text/javascript">
 	/* Make all columns equal height */
@@ -25,6 +24,7 @@
 		tmp = {value: "{{ bench }}", name: "{{ bench }}"};
 		itemList.push(tmp);
 	{% endfor %}
+	
 	var data = {items : itemList};
 	$(function() {
 		$('#excl_bench').autoSuggest(data.items,
@@ -34,24 +34,36 @@
 			asHtmlID: "1"});
 	});
 	
-	/* Add item to auto sugget to exp_list and make ready*/
-	var itemList2 = new Array();
+	/* Add item to auto sugget to baseExpList and make ready*/
+	var baseExpList = new Array();
 	var tmp;
-	tmp = {value: "np_base", name: "np_base"};
-	itemList2.push(tmp);
-	tmp = {value: "np_effra", name: "np_effra"};
-	itemList2.push(tmp);
-	tmp = {value: "newsys3_profilt5_effr", name: "newsys3_profilt5_effr"};
-	itemList2.push(tmp);
-	tmp = {value: "newsys3_ra", name: "newsys3_ra"};
-	itemList2.push(tmp);
-	var data2 = {items : itemList2};
+	{% for cur in baseExp %}
+		tmp = {value: "{{ cur }}", name: "{{ cur }}"};
+		baseExpList.push(tmp);		
+	{% endfor %}
+	var expData = {items : baseExpList};
 	$(function() {
-		$('#exp_type').autoSuggest(data2.items,
+		$('#baseExp').autoSuggest(expData.items,
 			{selectedItemProp: "name", 
 			searchObjProps: "name",
 			startText: "Enter experiment types to run",
 			asHtmlID: "2"});
+	});
+
+	/* Add item to auto sugget to extExpList and make ready*/
+	var extExpList = new Array();
+	var tmp;
+	{% for cur in extExp %}
+		tmp = {value: "{{ cur }}", name: "{{ cur }}"};
+		extExpList.push(tmp);		
+	{% endfor %}
+	var extData = {items : extExpList};
+	$(function() {
+		$('#extExp').autoSuggest(extData.items,
+			{selectedItemProp: "name", 
+			searchObjProps: "name",
+			startText: "Choose extended experiment types to EXCLUDE",
+			asHtmlID: "3"});
 	});
 </script>
 {% endblock %}
@@ -68,44 +80,12 @@ $("#accordion").tabs("#accordion div.pane", {
 	initialIndex : null
 });
 
-// ******** Focus on experiment name on start ********
-document.getElementById('expname').focus();
-
-// ********** Dynamically add rows to table **********
-
-editButtons();
- var i = 1;
- $('.addRow').click(
-		 function() {
-			 if($('#argtable > tbody > tr:first').length > 0) {
-				$('#argtable > tbody > tr:first').clone().appendTo('#argtable > tbody:last');
-				$('#argtable > tbody > tr:last').find("td[id^=front]").attr('id','front'+i);
-				$('#argtable > tbody > tr:last').find("input[id^=check]").attr('id','check'+i);
-				$('#argtable > tbody > tr:last').find("td[name^=param]").attr('name','param'+i);
-				$('#argtable > tbody > tr:last').find("td[name^=val]").attr('name','val'+i);
-				$('#argtable > tbody > tr:last').attr('id','row'+i);
-				i = i + 1;
-			 } else {
-			 	$('#argtable').append('<tr id="row0"><td id="front0"><input type="checkbox" id="check0"/></td><td class="edit" name="param0" >null</td><td class="edit" name="val0">null</td></tr>');
-			 }
-			 editButtons();
-			 return false;
- });
-
-// ********** Dynamically remove rows to table **********
-
- $('.delRow').click(
-		 function() {				 
-			 $('#argtable').find("input").each(function()
-			 {
-				 if($(this).is(':checked')) {
-					 var curId = $(this).attr('id');
-					 curId = curId.replace("check","#row")
-					 $(curId).remove();
-				 }
-			 });
-			 return false;
- });
+// ******** Make select all clickable ********
+ $('.checkall').click(
+		function() {
+			$(this).parents('fieldset:eq(0)').find(':checkbox')
+					.attr('checked', this.checked);
+});
  
 // ********** Submit needed values to server **********
 
@@ -141,7 +121,7 @@ editButtons();
 //************************************************
 {% block content %}
 <section id="main" class="column">
-<form name="argForm" id="argForm" action="runExp" method="post"> {% csrf_token %}
+<form name="argForm" id="argForm" action="runExp" method="post" enctype="multipart/form-data">
 	<article class="module width_full">
 	<div id="accordion">
 		<header>
@@ -151,16 +131,15 @@ editButtons();
 
 			<!-- EXPERIMENT NAME -->
 			<fieldset>
-				<label>Experiment Name</label> <input type="text" id="expname"
-					name="expname">
+				<label>Experiment Name</label> <b style="margin-left:10px">{{ expName }}</b>
+				<input type="hidden" id="expName" name="expName" value="{{ expName }}" />
 			</fieldset>
 			
 			<!-- END PATH TO EXECUTABLE -->
 			
 			<!-- PATH TO EXECUTABLE -->
 			<fieldset>
-				<label>Path to CPU Binary</label> <input type="file" id="path"
-					name="path">
+				{{ binFile }}
 			</fieldset>
 			<!-- END PATH TO EXECUTABLE -->
 
@@ -175,58 +154,35 @@ editButtons();
 			</fieldset>
 			<!-- END BENCHMARK SUITES -->
 			
-			<!-- BENCHMARKS -->
-			<!-- <fieldset>
-				<label> Benchmarks to Exclude </label>
-				<input type="text" id="excl_bench" name="excl_bench">
-			</fieldset> -->
-			<!-- END BENCHMARKS -->
-			
 			<!-- START SIZE PREF -->
 			<fieldset>
 				<label>Size Preference</label>
-				<span style="margin-left:10px">sizepref : </span><br /><input type="text" name="size_pref" id="size_pref" value="100M_" />
+				<span style="margin-left:10px">sizepref : </span><br /><input type="text" name="size_pref" id="size_pref" value="100M" />
 				<span style="margin-left:10px">size :</span><input type="text" name="size" id="size" value="100000000" />
 			</fieldset>
 			<!-- END SIZE PREF -->
-
-			<!-- START EXPERIMENT TYPE -->
-			<fieldset>
-				<label>Experiment Type</label>
-				<input type="text" id="exp_type" name="exp_type">
-			</fieldset>
-			<!-- END SIZE PREF -->
 			
-			<!-- ARGUMENT SETS -->
+			<!-- START COMMON ARGUMENT -->
 			<fieldset>
-				<label>Simulation arguments <input type="Image"
-					id="leftbutton" class="delRow" src="/static_media/images/icn_trash.png" title="Trash"> <input
-					type="Image" id="leftbutton" class="addRow"
-					src="/static_media/images/icn_new_article.png" title="Add"> </label>
-				<div class="spacer"></div>
-				<table id="argtable" class="tablesorter" cellspacing="0">
-					<thead>
-						<tr>
-							<th></th>
-							<th>Parameter</th>
-							<th>Value</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr id="row0">
-							<td id="front0"><input type="checkbox" id="check0"/></td>
-							<td class="edit" name="param0">restore</td>
-							<td class="edit" name="val0">true</td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="spacer"></div>
-				<input type="submit" class="config" value="Set Default">
-				<input type="submit" class="config" value="Load">
-				<input type="submit" class="config" value="Save">
+				<label> Common Arguments</label>
+				<textarea id="common" name="common" rows=4">-restore true -warmup_insns 10000000 -heartbeat_cycles 100000 -heartbeat_insns 100000 -insn_limit #{size} -validator true -mem_accurate_model true -pref true -pref_stride true
+				</textarea>
 			</fieldset>
-			<!-- END ARGUMENT SETS -->
+			<!-- END COMMON ARGUMENT -->
 			
+			<!-- START EXPERIMENT TYPE BASE -->
+			<fieldset>
+				<label>Base Experiment Types</label>
+				<input type="text" id="baseExp" name="baseExp">
+			</fieldset>
+			<!-- END EXPERIMENT TYPE BASE -->
+			
+			<!-- START EXPERIMENT TYPE EXTENDED -->
+			<fieldset>
+					<label>Extended Experiment Types to EXCLUDE</label>
+					<input type="text" id="extExp" name="extExp">
+				</fieldset>
+			<!-- END EXPERIMENT TYPE EXTENDED -->
 		</div>
 		<header>
 		<h2>Miscellaneous Configurations</h2>
@@ -237,6 +193,16 @@ editButtons();
 				<input type="checkbox" class="usevalues" id="useOut" name="useOut" /> Use Output <br />
 				<input type="checkbox" class="usevalues" id="useErr" name="useErr" /> Use Error <br />
 				<input type="checkbox" class="usevalues" id="useLog" name="useLog" /> Use Log <br />
+			</fieldset>
+			
+			<fieldset>
+				<label> Benchmarks to Exclude </label>
+				<input type="text" id="excl_bench" name="excl_bench">
+			</fieldset>
+			
+			<fieldset>
+			<label> pcm options </label>
+				<input type="text" id="pcm_options" name="pcm_options" value="-mem_multiplier 16">
 			</fieldset>
 		</div>
 	</div>

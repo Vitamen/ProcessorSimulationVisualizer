@@ -42,20 +42,33 @@
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
 	<thead>
 		<tr>
-			<th>Experiment Name</th>
+			<th>Submission Name</th>
 			<th>Submission Time</th>
-			<th>Benchmark Suite</th>
+			<th>Experiment Name</th>
 		</tr>
 	</thead>
 	<tbody>
 		{% for exp in experiments %}
 		<tr class="gradeA" name="{{exp.expname}}" id="{{exp.expname}}">
-			<td class="center">{{exp.expname}}</td>
+			<td class="center">{{exp.submissionName}}</td>
 			<td class="center">{{exp.subdate}}</td>		
-			<td class="center">{{exp.bsuite}}</td>	
+			<td class="center">{{exp.expName}}</td>	
 		</tr>
 		{% endfor %}
 	</tbody>
+	<tfoot>
+		<tr>
+			<th rowspan="1" colspan="1">
+				<input type="text" name="search_sub_name" value="Search name" class="search_init" style="margin-left:0px">
+			</th>
+			<th rowspan="1" colspan="1">
+				<input type="text" name="search_sub_name" value="Search time" class="search_init">
+			</th>
+			<th rowspan="1" colspan="1">
+				<input type="text" name="search_sub_name" value="Search experiment" class="search_init">
+			</th>
+		</tr>
+	</tfoot>
 </table>
 </section>
 {% endblock %}

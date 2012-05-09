@@ -760,6 +760,9 @@ fieldset label {
 	text-transform: uppercase;
 }
 
+fieldset input[type=file] {
+	margin-left: 10px;
+}
 fieldset input[type=text] {
 	
 	-webkit-border-radius: 5px;
