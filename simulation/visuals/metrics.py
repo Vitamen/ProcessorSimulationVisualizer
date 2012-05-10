@@ -20,7 +20,7 @@ def getMetricsOfTypeForExperiments(request):
     metricType = request.POST.get('metric_type')
     metricMap = {}
     for experiment in experiments:
-        experimentMetric_objects = ExperimentMetric.objects.filter(metricname__metrictype=metricType)
+        experimentMetric_objects = Experiments.objects.filter()
         for metric in experimentMetric_objects:
             if metric in metricMap:
                 metricMap[metric] = metricMap[metric]+1
@@ -32,7 +32,7 @@ def getMetricsOfTypeForExperiments(request):
         if metricMap[experimentMetric] == experimentCount:
             metrics.append(experimentMetric.metricname.metricname)
     
-    print len(metrics)
+    #print len(metrics)
     #if len(experiments) == 0 :
     #    metrics = []
     c = Context({

@@ -1,4 +1,4 @@
-from django.template import Context, loader
+from django.template import Context, RequestContext, loader
 from django.http import HttpResponse
 from experimentManager.models import *
 from dataParser import parser
@@ -30,32 +30,32 @@ def getBenchmarksFromExperiments(request):
     return HttpResponse(c)
 
 def index(request):
-    request.session["experiments"] = []
-    metric = ''
-    benchmarks = []
-    all_experiments = ['100M_np_base', '100M_stream_newsys_effra_fp'];
+     #Get the list of all experiments in the database
+    experiments = Experiments.objects.all() 
     
-    experiments = [];
-    if request.method == 'POST':
-        benchmarks = request.POST.getlist('benchmarks')
-        experiments = request.POST.getlist('experiments')
-        metric = request.POST['metric']
-        print benchmarks
-        print experiments
-        print metric
-    
-    data_root = os.path.join(PROJECT_PATH, "static_media")
-    data_root = os.path.join(data_root, "data")
-    for i in range(0, len(all_experiments)):
-        experiment = all_experiments[i]
-        if not os.path.exists(data_root + experiment + os.sep + metric):
-            parser.extractMetricFromExperiment(experiment, metric)
-
-    t = loader.get_template('visuals/index.html')
-    c = Context({
-        'metric': metric,
-        'benchmarks': benchmarks,
-        'experiments': all_experiments,
+    #Set up the context and page to return
+    c = RequestContext(request ,{
+        'experiments': experiments,
         'experiments_selected': experiments
     })
+    t = loader.get_template('visuals/index.html')
     return HttpResponse(t.render(c))
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    

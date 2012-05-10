@@ -1,10 +1,11 @@
 import json
 import os.path
 import subprocess
+from simulation.settings import PROJECT_PATH
 from experimentManager.models import *
 
-sampleDataPath = 'dataParser/SampleData/'
-outputDataPath = 'static_media/data/'
+sampleDataPath = os.path.join(PROJECT_PATH, 'dataParser', 'SampleData')
+outputDataPath = os.path.join(PROJECT_PATH,'static_media','data')
 
 def readFile(self):
     f = open('sim.out')
@@ -85,16 +86,16 @@ def extractBenchmarksFromExperiments (exp):
 
 def extractMetricFromExperiment (exp,aMetric):
 
-    path = os.path.join(sampleDataPath,exp)
     ## Give shell command to move to correct path
-    
+    path = os.path.join(sampleDataPath,exp)
+     
     ## Look for Exp folder
-    if not os.path.exists(outputDataPath + exp):
-        os.makedirs(outputDataPath + exp)
-        
+    if not os.path.exists(os.path.join(outputDataPath,exp)):
+        os.mkdir(os.path.join(outputDataPath,exp))
         
     ##Create an output file with the metric name.
-    FILE = open(outputDataPath + exp + "/" + aMetric + ".js","w")
+    fileOutput = os.path.join(outputDataPath,exp,aMetric) + ".js"
+    FILE = open(fileOutput,"w")
     
     ##Grep for the given metric 
     grepRes = subprocess.Popen('cd '+ path + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
