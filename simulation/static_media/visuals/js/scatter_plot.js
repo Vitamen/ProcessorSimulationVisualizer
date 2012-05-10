@@ -1,37 +1,23 @@
 var chart;
 
-var benchmarks = new Array();
+var benchmark = "";
 $('.benchmark_id').each(function() {
-	benchmarks.push(this.getAttribute('value'))
+	benchmark = this.getAttribute('value');
 })
 
-var experiments = new Array();
+var experiment = "";
 $('.experiment').each(function() {
-	experiments.push(this.getAttribute('value'))
+	experiment = this.getAttribute('value');
 })
 
 var metric_id = document.getElementById('metric_id').getAttribute('value');
-var visible_names = new Array();
-var temp_data = new Array();
-var lowerStack = new Array();
 
-for (var exp_i = 0; exp_i < experiments.length; exp_i++) {
-	var data = datatest[experiments[exp_i]];
-	var temp_data = [];
-	for (var i = 0; i < data.length; i++) {
-		var data_item = data[i];
-		for (var parsed_key in data_item) {
-			parsed_name = parsed_key.replace("Z",".").replace("Z",".");
-			if (benchmarks.indexOf(parsed_name) > -1) {
-				visible_names.push(parsed_name);
-				temp_data.push(data_item[parsed_key][0]);
-			}
-		}
-	}
-	visible_data.push({
-		name: experiments[exp_i],
-        data: temp_data
-	})
+var all_data = [];
+var dataname = experiment+benchmark;
+var data = datatest[dataname];
+
+for (var i = 0; i < data.length; i++) {
+	visible_data.push([i,data[i]]);
 }
 
 $(document).ready(function() {
@@ -39,13 +25,12 @@ $(document).ready(function() {
         chart: {
         	backgroundColor: '#F8F8F8',
             renderTo: 'container',
-            type: 'column',
+            type: 'scatter',
         },
         title: {
             text: ''
         },
         xAxis: {
-            categories:visible_names,
             labels: {
                 rotation: -90,
                 align: 'right'
@@ -74,11 +59,29 @@ $(document).ready(function() {
             }
         },
         plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
-            }
+        	scatter: {
+				marker: {
+					radius: 3,
+					states: {
+						hover: {
+							enabled: true,
+							lineColor: 'rgb(100,100,100)'
+						}
+					}
+				},
+				states: {
+					hover: {
+						marker: {
+							enabled: false
+						}
+					}
+				}
+			}
         },
-        series: visible_data
+        series: [{
+            name: 'Female',
+            color: 'rgba(223, 83, 83, .5)',
+            data: visible_data
+        }]
     });
 });

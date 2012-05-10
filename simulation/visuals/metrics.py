@@ -17,22 +17,26 @@ def index(request):
 
 def getMetricsOfTypeForExperiments(request):
     experiments = request.POST.getlist('experiments')
+    print "got experiments"
+    print experiments
     metricType = request.POST.get('metric_type')
+    print "of type: "+ metricType
     metricMap = {}
     for experiment in experiments:
-        experimentMetric_objects = Experiments.objects.filter()
-        for metric in experimentMetric_objects:
+        experimentMetric_objects = ExperimentMetric.objects.filter(expname=experiment, metricname__metrictype=metricType)
+        for experimentMetric in experimentMetric_objects:
+            metric = experimentMetric.metricname
             if metric in metricMap:
                 metricMap[metric] = metricMap[metric]+1
             else:
                 metricMap[metric] = 1
+    
     metrics = [];
     experimentCount = len(experiments)
-    for experimentMetric in metricMap:
-        if metricMap[experimentMetric] == experimentCount:
-            metrics.append(experimentMetric.metricname.metricname)
+    for metric in metricMap:
+        if metricMap[metric] == experimentCount:
+            metrics.append(metric.metricname)
     
-    #print len(metrics)
     #if len(experiments) == 0 :
     #    metrics = []
     c = Context({
