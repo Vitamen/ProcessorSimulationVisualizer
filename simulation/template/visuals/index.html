@@ -49,9 +49,10 @@
 //************************************************
 
 {% block onready %}
+
  metric = document.getElementById('metric_id').getAttribute('value');
  $("#metrics_list").val(metric);
- 
+
  $('.checkall').click(
 		function() {
 			$(this).parents('fieldset:eq(0)').find(':checkbox')
@@ -107,21 +108,25 @@ $('.experiment').each(function() {
 {% block content %}
 
 
-
+<!--  hidden divs to communicate metric, benchmarks, experiments to javascript -->
 <div id="metric_id" value="{{metric}}"></div>
-{% for benchmark in benchmarks %}
+{% for benchmark in benchmarks_selected %}
 	<div class="benchmark" value="{{benchmark}}"></div>
 {% endfor %}
 
 {% for experiment in experiments_selected %}
 	<div class="experiment" value="{{experiment}}"></div>
 {% endfor %}
-   
+
+
+<!-- div that chart will render to -->
 <div id="left-panel">
 	<div id="chartbox">
 		<div id="container"></div>
 	</div>
 </div>
+
+<!-- Control Panel -->
 <form id="argForm" action="" method="post">
 	<article class="module width_3_quarter">
 		<header><h3 class="tabs_involved">Content Manager</h3>
@@ -132,6 +137,8 @@ $('.experiment').each(function() {
 		</ul>
 		</header>
 		<div class="tab_container">
+			
+			
 			
 			<!-- EXPERIMENT -->
 			<div id="tab1" class="tab_content">
@@ -154,6 +161,8 @@ $('.experiment').each(function() {
 			</div>
 			<!-- END EXPERIMENT -->
 			
+			
+			
 			<!-- METRIC -->
 			<div id="tab2" class="tab_content">			
 				<select style="width:92%;" id="metrics_type_dropdown" name="metric_type" onchange="selectMetricType(this)">
@@ -167,6 +176,8 @@ $('.experiment').each(function() {
 				<div id="metric-error-message">Please select an experiment first!</div>
 			</div>
 			<!-- END METRIC -->
+			
+			
 			
 			<!-- BENCHMARKS -->
 			<div id="tab3" class="tab_content">
@@ -183,17 +194,36 @@ $('.experiment').each(function() {
 			</div>
 			<!-- END BENCHMARKS -->
 			
-		</div><!-- end of .tab_container -->
+			
+			
+		</div>
 	</article>
 	<input type="submit" id="run" value="Refresh Graph">
 </form>
+
+<!-- Javascripts for metrics and benchmarks tab -->
 <script type="text/javascript" src="/static_media/visuals/js/metrics_tab.js"></script>
 <script type="text/javascript" src="/static_media/visuals/js/benchmarks_tab.js"></script>
+
 <script type="text/javascript">
 	var datatest = [];
 </script>
-{% for experiment in experiments %}
-   	<script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
-{% endfor %}
-<script type="text/javascript" src="/static_media/js/benchmark_comparison_scrolling_chart.js"></script>
+
+<!-- include the correct data files -->
+{% if chart_type == "HISTOGRAM" %}
+	{% for experiment in experiments_selected %}
+	   	<script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
+	{% endfor %}
+	<script type="text/javascript" src="/static_media/js/benchmark_comparison_scrolling_chart.js"></script>
+{% endif %}
+
+{% if chart_type == "SCATTERPLOT" %}
+
+	{% for experiment in experiments_selected %}
+		{% for benchmark in benchmarks_selected %}
+	   		<script type="text/javascript" src="/static_media/data/{{experiment}}/{{benchmark}}/{{metric}}.js"></script>
+	   	{% endfor %}
+	{% endfor %}	
+	<script type="text/javascript" src="/static_media/visuals/js/scatter_plot.js"></script>
+{% endif %}
 {% endblock %}
