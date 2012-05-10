@@ -62,11 +62,6 @@ var all_experiments = new Array();
 $('.experiment').each(function() {
 	all_experiments.push($(this).attr('value'))
 })
- $('.experiment_checkbox').each(function() {
- 	if (all_experiments.indexOf($(this).attr('value')) > -1) {
- 		$(this).attr('checked', 'yes');
-	}
- })
  
  $('#run').click(
  	function() {
@@ -79,7 +74,6 @@ $('.experiment').each(function() {
  
 
  var aSelected = [];
-    
 
 {% endblock %}
 
@@ -118,7 +112,7 @@ $('.experiment').each(function() {
 	<div class="benchmark_id" value="{{benchmark}}"></div>
 {% endfor %}
 
-{% for experiment in experiments_selected %}
+{% for experiment in experiments_selected_ret %}
 	<div class="experiment" value="{{experiment}}"></div>
 {% endfor %}
 
@@ -158,17 +152,11 @@ $('.experiment').each(function() {
 				</thead>
 				<tbody>
 				{% for exp in experiments %}
-				<tr class="gradeA" name="{{exp.expname}}" id="{{exp.expname}}">
-					<td class="center">{{exp.submissionName}}</td>
-					<td class="center">{{exp.subdate}}</td>		
-					<td class="center">{{exp.expName}}</td>	
+				<tr class="gradeA" name="{{exp.expName}}" id="{{exp.expName}}">
+					<td class="center" id="subName">{{exp.submissionName}}</td>
+					<td class="center" id="subDate">{{exp.subdate}}</td>		
+					<td class="center" id="expName">{{exp.expName}}</td>	
 				</tr>
-          {% for experiment in experiments %}
-          <tr class="odd" id="{{experiment}}_row">
-            <td class="center"><input class="experiment_checkbox" type="checkbox" value="{{experiment}}" name="experiments"/></td>
-            <td class="center">{{experiment}}</td>
-          </tr>
-          {% endfor %}
 				{% endfor %}
 				</tbody>
 				<tfoot>
@@ -245,7 +233,7 @@ $('.experiment').each(function() {
 <!-- include the correct data files -->
 {% if chart_type == "HISTOGRAM" %}
 	{% for experiment in experiments_selected %}
-	   	<script type="text/javascript" src="/static_media/data/{{experiment}}/{{metric}}.js"></script>
+	   	<script type="text/javascript" src="/parsedExperiments/{{experiment.0}}/{{experiment.1}}/{{metric}}.js"></script>
 	{% endfor %}
 	<script type="text/javascript" src="/static_media/js/benchmark_comparison_scrolling_chart.js"></script>
 {% endif %}
@@ -254,7 +242,7 @@ $('.experiment').each(function() {
 
 	{% for experiment in experiments_selected %}
 		{% for benchmark in benchmarks_selected %}
-	   		<script type="text/javascript" src="/static_media/data/{{experiment}}/{{benchmark}}/{{metric}}.js"></script>
+	   		<script type="text/javascript" src="/parsedExperiment/{{experiment.0}}/{{experiment.1}}/{{benchmark}}/{{metric}}.js"></script>
 	   	{% endfor %}
 	{% endfor %}	
 	<script type="text/javascript" src="/static_media/visuals/js/scatter_plot.js"></script>

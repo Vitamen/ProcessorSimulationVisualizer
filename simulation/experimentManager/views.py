@@ -36,7 +36,7 @@ def config(request):
 #########################################################
 def runExp(request):
     
-    #Use the generator to generate condor.sub and setup
+    #Use the generator to generate condor.sub anBd setup
     #relevant directories
     generator.generate(request)
     return HttpResponse("Success!")

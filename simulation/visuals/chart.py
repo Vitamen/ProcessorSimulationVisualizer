@@ -1,21 +1,27 @@
 from django.template import Context, RequestContext, loader
 from django.http import HttpResponse
-from experimentManager.models import *
-from dataParser import parser
-from settings import PROJECT_PATH
+from simulation.experimentManager.models import *
+from simulation.experimentManager import generator
+from simulation.dataParser import parser
+from simulation.settings import PROJECT_PATH
 import os.path
 
+############################################################
+
 def getBenchmarksFromExperiments(request):
-    experiments = request.POST.getlist("experiments")
+    experiments = getExperiments(request)
     benchmarkMap = {}
     for experiment in experiments:
         print experiment
-        experimentBenchmarks = ExperimentBenchmark.objects.filter(expname__expname=experiment)
+        
+        #Get experiments benchmarks
+        experimentBenchmarks = parser.extractBenchmarksFromExperiments(experiment[0], experiment[1])
+        print len(experimentBenchmarks)
         for benchmark in experimentBenchmarks:
-            if benchmark.bmname.name in benchmarkMap:
-                benchmarkMap[benchmark.bmname.name] = benchmarkMap[benchmark.bmname.name]+1
+            if benchmark.name in benchmarkMap:
+                benchmarkMap[benchmark.name] = benchmarkMap[benchmark.name]+1
             else:
-                benchmarkMap[benchmark.bmname.name] = 1
+                benchmarkMap[benchmark.name] = 1
         
     benchmarks = [];
     experimentCount = len(experiments)
@@ -29,56 +35,73 @@ def getBenchmarksFromExperiments(request):
     })
     return HttpResponse(c)
 
+############################################################
+
 def index(request):
-    parser.parseExperiment('100M_stream_newsys_effra_fp');
+    #Set up default values to pass to index
     request.session["experiments"] = []
     chart_type = 'NOPLOT';
     metric = ''
     benchmarks = []
     benchmarks_selected = []
-    all_experiments = ['100M_np_base', '100M_stream_newsys_effra_fp'];
+    experiments = Experiments.objects.all() 
     experiments_selected = []
+    experiments_selected_ret = []
     
+    #Modify values for refresh pages
     if request.method == 'POST':
         #get the post data
         chart_type = request.POST['metric_type']
         metric = request.POST['metric']
         benchmarks_selected = request.POST.getlist('benchmarks')
-        experiments_selected = request.POST.getlist('experiments')
+        experiments_selected = getExperiments(request)
+        experiments_selected_ret = getExperimentsRet(request)
+        
         
         # parse metrics as necessary
-        data_root = os.path.join(PROJECT_PATH, "static_media")
-        data_root = os.path.join(data_root, "data")
         for i in range(0, len(experiments_selected)):
             experiment = experiments_selected[i]
-            parser.extractMetricFromExperiment(experiment, metric)
-    
-    t = loader.get_template('visuals/index.html')
-    c = Context({
+            parser.extractMetricFromExperiment(experiment[0], experiment[1],metric)
+            
+            
+    #Set up the context and page to return
+    c = RequestContext(request ,{
         'chart_type': chart_type,
         'metric': metric,
         'benchmarks_selected': benchmarks_selected,
-        'experiments': all_experiments,
-        'experiments_selected': experiments_selected
+        'experiments': experiments,
+        'experiments_selected': experiments_selected,
+        'experiments_selected_ret': experiments_selected_ret,
     })
     t = loader.get_template('visuals/index.html')
     return HttpResponse(t.render(c))
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
-    
+
+############################################################
+
+def sepByComma(value):
+    return [x.strip() for x in value.split(",")]
+
+############################################################
+
+def getExperiments(request):
+    subName = request.POST['subName'][:-1]
+    subName = sepByComma(subName)
+    expName = request.POST['expName'][:-1]
+    expName = sepByComma(expName)
+    expList = []
+    for i in range(0, len(subName)):
+        expList.append([subName[i], expName[i]])
+    return expList
+
+############################################################
+
+def getExperimentsRet(request):
+    expName = request.POST['expName'][:-1]
+    expName = sepByComma(expName)
+    expList = []
+    for i in range(0, len(expName)):
+        expList.append(expName[i])
+    return expList
+############################################################
+

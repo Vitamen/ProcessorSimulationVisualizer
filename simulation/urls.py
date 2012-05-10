@@ -42,3 +42,9 @@ urlpatterns += patterns('django.views.static',
         'serve', {
         'document_root':  os.path.join(PROJECT_PATH,'static_media'),
         'show_indexes': True }),)
+
+urlpatterns += patterns('django.views.static',
+    (r'^parsedExperiments/(?P<path>.*)$', 
+        'serve', {
+        'document_root':  os.path.join(PROJECT_PATH,'parsedExperiments'),
+        'show_indexes': True }),)

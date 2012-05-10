@@ -20,14 +20,54 @@
 
 {% block onready %}
 $(document).ready(function() {
-
+	var hasArgForm = document.getElementById("argForm")
+	if(hasArgForm)
+	{
+		/* Create hidden fields for submission name and experiment names*/
+		var subName = document.createElement("input");
+		subName.setAttribute("type", "hidden");
+		subName.setAttribute("name", "subName");
+		subName.setAttribute("value", "");
+		document.getElementById("argForm").appendChild(subName);
+		var expName = document.createElement("input");
+		expName.setAttribute("type", "hidden");
+		expName.setAttribute("name", "expName");
+		expName.setAttribute("value", "");
+		document.getElementById("argForm").appendChild(expName);
+		var pageUpdated = document.createElement("input");
+		pageUpdated.setAttribute("type", "hidden");
+		pageUpdated.setAttribute("id", "pageUpdated");
+		pageUpdated.setAttribute("value", "true");
+		document.getElementById("argForm").appendChild(pageUpdated);
+	}
+	
 	/* Add a click handler to the rows - this could be used as a callback */
     $("#example tbody tr").click( function( e ) {
         if ( $(this).hasClass('row_selected') ) {
             $(this).removeClass('row_selected');
+            if(hasArgForm) {
+            	var remSubName = $(this).children("#subName").text();
+            	var remExpName = $(this).children("#expName").text();
+            	subName.setAttribute("value", 
+            		subName.getAttribute("value").replace(remSubName+",",""));
+            	expName.setAttribute("value", 
+            		expName.getAttribute("value").replace(remExpName+",",""));
+            	pageUpdated.setAttribute("value", "true");
+            	metric_should_update = true;
+            	benchmark_should_update = true;
+            }
         }
         else {
             $(this).addClass('row_selected');
+            if(hasArgForm) {
+            	subName.setAttribute("value", 
+            		subName.getAttribute("value") + $(this).children("#subName").text() + ",");
+            	expName.setAttribute("value", 
+            		expName.getAttribute("value") + $(this).children("#expName").text() + ",");		
+            	pageUpdated.setAttribute("value", "true");
+            	metric_should_update = true;
+            	benchmark_should_update = true;
+            }
         }
     });
     

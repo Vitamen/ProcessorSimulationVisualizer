@@ -13,7 +13,7 @@ class Benchmarks(models.Model):
     name = models.CharField(max_length=200, primary_key=True)
     def __unicode__(self):
         return self.name
-    
+
 def findOrCreateBenchmarkByName(benchmarkName):
     benchmarks = Benchmarks.objects.filter(name=benchmarkName);
     if len(benchmarks) == 1:

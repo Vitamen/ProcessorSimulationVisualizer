@@ -98,10 +98,12 @@ def makeCondorSub(request, fileName, dirName):
     #Go through each type of base experiment
     baseExp = sepByComma(request.POST['as_values_2'])
     for base in baseExp:
+        if base == "": continue
         #Go through each type of extended experiment
         extExp = ExtendedExperimentTypes.objects.all();
         extExpExcl = sepByComma(request.POST['as_values_3'])
         for ext in extExp:
+            if ext == "": continue
             if str(ext.expType) not in extExpExcl:
                 curexpName = request.POST['size_pref'] + "_" + base + "_" + str(ext.expType)
                 curExpDir = dirName + os.sep + "data" + os.sep + curexpName

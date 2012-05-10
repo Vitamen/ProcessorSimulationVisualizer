@@ -156,4 +156,5 @@ PUSHER_SECRET = '0b72799610efa7a8fc90'
 
 #These configurations are used by experiment manager
 EXP_ROOT_DIR =  os.path.join(PROJECT_PATH,"experiments")
+PARSE_ROOT_DIR =  os.path.join(PROJECT_PATH,"parsedExperiments")
 EXECUTABLE_PATH = EXP_ROOT_DIR + os.sep + 'invoke-ringo.rb'

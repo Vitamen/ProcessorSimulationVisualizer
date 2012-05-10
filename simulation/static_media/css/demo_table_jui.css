@@ -151,7 +151,7 @@ table.display thead th div.DataTables_sort_wrapper span {
 .paginate_disabled_previous, .paginate_enabled_previous, .paginate_disabled_next, .paginate_enabled_next {
 	height: 19px;
 	width: 19px;
-	margin-left: 3px;
+	margin-left: 40px;
 	float: left;
 }
 
