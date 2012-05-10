@@ -3,8 +3,8 @@ import os
 
 PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
 # Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^config/$', 'experimentManager.views.config'),
@@ -20,12 +20,12 @@ urlpatterns = patterns('',
     url(r'^updateMetricType', 'visuals.metrics.updateMetricType'),
     url(r'^metrics/$', 'visuals.metrics.index'),
     url(r'^browse/$', 'experimentManager.views.browse'),
-    
+    url(r'^admin/', include(admin.site.urls)),
     #Url to read lines from a file
     url(r'^read/$', 'dataParser.parser.readFile'),
     url(r'^listExp/$','dataParser.parser.getExperimentList'),
     url(r'^getData/$','dataParser.parser.getDataFor'),
-    url(r'^extractBenchmarks/$', 'dataParser.parser.parseExperiment')
+    url(r'^extractBenchmarks/$', 'dataParser.parser.parseExperiment'),
 )
     # Examples:
     # url(r'^$', 'simulation.views.home', name='home'),

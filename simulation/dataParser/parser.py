@@ -1,10 +1,11 @@
 import json
 import os.path
 import subprocess
+from simulation.settings import PROJECT_PATH
 from experimentManager.models import *
 
-sampleDataPath = 'dataParser/SampleData/'
-outputDataPath = 'static_media/data/'
+sampleDataPath = os.path.join(PROJECT_PATH, 'dataParser', 'SampleData')
+outputDataPath = os.path.join(PROJECT_PATH,'static_media','data')
 
 def readFile(self):
     f = open('sim.out')
@@ -77,9 +78,9 @@ def extractMetricFromExperiment (exp,aMetric):
         extractScatterplotMetricFromExperiment(exp, aMetric)
 
 def extractHistogramMetricFromExperiment (exp,aMetric):
-    path = os.path.join(sampleDataPath,exp)
     ## Give shell command to move to correct path
-    
+    path = os.path.join(sampleDataPath,exp)
+     
     ## Look for Exp folder
     folderName = generateOutputFolderForExperimentAndHistogramMetric(exp, aMetric)
 

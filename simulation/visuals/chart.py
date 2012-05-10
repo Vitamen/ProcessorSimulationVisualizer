@@ -1,4 +1,4 @@
-from django.template import Context, loader
+from django.template import Context, RequestContext, loader
 from django.http import HttpResponse
 from experimentManager.models import *
 from dataParser import parser
@@ -61,4 +61,24 @@ def index(request):
         'experiments': all_experiments,
         'experiments_selected': experiments_selected
     })
+    t = loader.get_template('visuals/index.html')
     return HttpResponse(t.render(c))
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    

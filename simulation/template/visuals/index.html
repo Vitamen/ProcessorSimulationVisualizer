@@ -1,15 +1,14 @@
-{% extends "base.html" %}
+{% extends "base_table.html" %}
 {% load extra_tags %}
 //************************************************
 // Attach page-specific javascripts
 //************************************************
 
-{% block javascript %}
-    <script src="/static_media/lib/jquery.js" type="text/javascript"></script>
+{% block javascript_table %}
     <script src="/static_media/js/getQueryParams.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="/static_media/css/chart.css" />
     <link rel="stylesheet" type="text/css" href="/static_media/css/dropdown.css" />
-    <link rel="stylesheet" type="text/css" href="/static_media/css/control.css" />
+    <link rel="stylesheet" type="text/csAs" href="/static_media/css/control.css" />
     
     <script type="text/javascript" src="/static_media/lib/highcharts.js"></script>
     <script type="text/javascript" src="/static_media/lib/exporting.js"></script>
@@ -48,8 +47,7 @@
 // Javascripts to run on document ready
 //************************************************
 
-{% block onready %}
-
+{% block onready_table %}
  metric = document.getElementById('metric_id').getAttribute('value');
  $("#metrics_list").val(metric);
 
@@ -136,7 +134,7 @@ $('.experiment').each(function() {
 <!-- Control Panel -->
 <form id="argForm" action="" method="post">
 	<article class="module width_3_quarter">
-		<header><h3 class="tabs_involved">Content Manager</h3>
+		<header><h3 class="tabs_involved" id="contManager">Content Manager</h3>
 		<ul class="tabs">
 			<li><a href="#tab1">Experiment(s)</a></li>
 	   		<li><a href="#tab2" id="metric-link">Metric</a></li>
@@ -149,22 +147,45 @@ $('.experiment').each(function() {
 			
 			<!-- EXPERIMENT -->
 			<div id="tab1" class="tab_content">
+			<div class="demo_jui">
 				<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
-					<thead>
-						<tr>
-							<th>Select</th>
-							<th>Experiment Name</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for experiment in experiments %}
-						<tr class="odd" id="{{experiment}}_row">
-							<td class="center"><input class="experiment_checkbox" type="checkbox" value="{{experiment}}" name="experiments"/></td>
-							<td class="center">{{experiment}}</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
+				<thead>
+					<tr>
+						<th>Submission Name</th>
+						<th>Submission Time</th>
+						<th>Experiment Name</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for exp in experiments %}
+				<tr class="gradeA" name="{{exp.expname}}" id="{{exp.expname}}">
+					<td class="center">{{exp.submissionName}}</td>
+					<td class="center">{{exp.subdate}}</td>		
+					<td class="center">{{exp.expName}}</td>	
+				</tr>
+          {% for experiment in experiments %}
+          <tr class="odd" id="{{experiment}}_row">
+            <td class="center"><input class="experiment_checkbox" type="checkbox" value="{{experiment}}" name="experiments"/></td>
+            <td class="center">{{experiment}}</td>
+          </tr>
+          {% endfor %}
+				{% endfor %}
+				</tbody>
+				<tfoot>
+				<tr>
+					<th rowspan="1" colspan="1">
+						<input type="text" name="search_sub_name" value="" class="search_init" style="margin-left:0px">
+				</th>
+				<th rowspan="1" colspan="1">
+					<input type="text" name="search_sub_name" value="" class="search_init">
+				</th>
+				<th rowspan="1" colspan="1">
+					<input type="text" name="search_sub_name" value="" class="search_init">
+				</th>
+				</tr>
+				</tfoot>
+			</table>
+		</div>
 			</div>
 			<!-- END EXPERIMENT -->
 			

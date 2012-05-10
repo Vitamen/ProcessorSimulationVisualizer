@@ -15,6 +15,8 @@ ul.as-selections li {
 
 ul.as-selections li.as-selection-item {
 	color: #2b3840;
+	width: 160px;
+	float: left;
 	font-size: 13px;
 	font-family: "Lucida Grande", arial, sans-serif;
 	text-shadow: 0 1px 1px #fff;

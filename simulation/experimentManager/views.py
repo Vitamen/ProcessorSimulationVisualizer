@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.template import Context,loader, RequestContext
 from datetime import datetime
-from models import BenchmarkSuite, Benchmarks, Arguments, \
- ArgumentSet, ArgMembership, Experiments
+from models import *
 import re, os, generator
+from django.core import serializers
 
 PROJECT_PATH = os.path.abspath(os.path.split(__file__)[0])
 
@@ -14,12 +14,20 @@ def config(request):
     # Get the list of benchmarks associated with each suite
     speccpu = Benchmarks.objects.filter(suite = 1)
     spec2006 = Benchmarks.objects.filter(suite = 2)
+    baseExp = BaseExperimentTypes.objects.all()
+    extExp = ExtendedExperimentTypes.objects.all()
+    expName = generator.decideName()
     
     #load page
     t = loader.get_template("experimentManager/config.html")
+    binFile = BinRevForms()
     c = Context({
+                 'expName' : expName,
                  'speccpu' : speccpu,
-                 'spec2006' : spec2006
+                 'spec2006' : spec2006,
+                 'baseExp' : baseExp,
+                 'extExp' : extExp,
+                 'binFile' : binFile
             })
     return HttpResponse(t.render(c))
 
@@ -28,47 +36,10 @@ def config(request):
 #########################################################
 def runExp(request):
     
-    #RegEx for recognizing arguments
-    paramx = re.compile('param([\d_]+)')
-    valx = re.compile("^val([\d_]+)")
-    
-    #Create experiment and save to list
-    baseExpName = request.POST['size_pref']
-    expTypes = [x.strip() for x in request.POST["as_values_2"].split(",")]
-    for expType in expTypes:
-        if expType == "" : continue
-        myexpName = request.POST['expname'] + baseExpName + expType
-        
-        '''#Create argset
-        curArgSet = ArgumentSet(setname=myexpName)
-        curArgSet.save()'''
-        
-        #Create argument set for this experiment set
-        paramdict = {}
-        valdict = {}
-        paramvaldict = {}
-        for curVal in request.POST:
-            if re.match(paramx, curVal):
-                numArg = paramx.search(curVal).group(1)
-                paramdict[numArg] = request.POST[curVal]
-            elif re.match(valx, curVal):
-                    numArg = valx.search(curVal).group(1)
-                    valdict[numArg] = request.POST[curVal]
-        '''for curVal in paramdict:
-            p = Arguments(argname=paramdict[curVal], value=valdict[curVal])
-            paramvaldict[paramdict[curVal]] = valdict[curVal]
-            p.save()
-            argmember = ArgMembership(setname=curArgSet,argname=p)
-            argmember.save()'''
-        experiment = Experiments(expname=myexpName, execpath="",
-                                bsuite=BenchmarkSuite.objects.get(suite=request.POST['benchsuite']), 
-                                subdate= datetime.now())
-        experiment.save()
-    
-    #Generate dictionary of things used in sampleout.html
-    c = Context()  
-    t = loader.get_template("experimentManager/sampleoutput.html")
-    return HttpResponse(t.render(c))
+    #Use the generator to generate condor.sub and setup
+    #relevant directories
+    generator.generate(request)
+    return HttpResponse("Success!")
     
 #########################################################
 # Browse data in the database

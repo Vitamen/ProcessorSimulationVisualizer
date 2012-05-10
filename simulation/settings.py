@@ -103,14 +103,11 @@ ROOT_URLCONF = 'simulation.urls'
 
 TEMPLATE_DIRS = (
    os.path.join(PROJECT_PATH,"template"),
-   os.path.join(PROJECT_PATH,"condorManager/template"),
-   os.path.join(PROJECT_PATH,"experimentManager/template"),
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
 )
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
@@ -120,10 +117,6 @@ INSTALLED_APPS = (
     'experimentManager',
     'visuals',
     'condorManager'
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
 )
 
 # A sample logging configuration. The only tangible logging

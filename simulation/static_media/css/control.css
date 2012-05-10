@@ -13,7 +13,7 @@ article {
 
 .module h3.tabs_involved {
 	display: block;
-	width: 60%;
+	width: 30%;
 	float: left;
 }
 
@@ -28,6 +28,10 @@ width: 100%;
 margin: -5px 0 0 0;
 }
 
+#contManager {
+	margin-top: 5px;
+	margin-left: 5px;
+}
 .tablesorter td{
 margin: 0;
 padding: 0;
