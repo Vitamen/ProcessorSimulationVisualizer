@@ -39,7 +39,6 @@ $(document).ready(function() {
                     var series1 = this.series[0];
                     var series2 = this.series[1];
                     var categories = this.xAxis[0].categories;
-                    console.log(categories);
                 
                     var data_object = core_data.shift();
                     var data_object_2 = core_data_2.shift();
@@ -57,7 +56,6 @@ $(document).ready(function() {
                     categories.push(scrolling_parsed_name);
                     series1.addPoint(scrolling_parsed_data_point, true, true);
                     series2.addPoint(scrolling_parsed_data_point_2, true, true);
-                    console.log(categories);
                 }
             },
         },

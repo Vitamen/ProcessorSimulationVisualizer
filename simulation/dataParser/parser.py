@@ -15,7 +15,6 @@ def getExperimentList(self):
     print [f for f in os.listdir(sampleDataPath)]
 
 def parseExperiment (exp):
-    exp = "100M_stream_effra"
     benchmarkSuite, created = BenchmarkSuite.objects.get_or_create(suite="suite")
     experiment_object = findOrCreateExperimentByName(exp)
     path = os.path.join(sampleDataPath,exp)
@@ -78,16 +77,15 @@ def extractMetricFromExperiment (exp,aMetric):
         extractScatterplotMetricFromExperiment(exp, aMetric)
 
 def extractHistogramMetricFromExperiment (exp,aMetric):
-    print "EXTracting histogram"
     path = os.path.join(sampleDataPath,exp)
     ## Give shell command to move to correct path
     
     ## Look for Exp folder
-    if not os.path.exists(outputDataPath + exp):
-        os.makedirs(outputDataPath + exp)
+    folderName = generateOutputFolderForExperimentAndHistogramMetric(exp, aMetric)
 
     ##Create an output file with the metric name.
-    FILE = open(outputDataPath + exp + "/" + aMetric + ".js","w")
+    fileName = generateOutputPathForExperimentAndHistogramMetric(exp, aMetric)
+    FILE = open(fileName,"w")
     
     ##Grep for the given metric 
     grepRes = subprocess.Popen('cd '+ path + ' ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -115,7 +113,6 @@ def extractHistogramMetricFromExperiment (exp,aMetric):
 
 
 def extractScatterplotMetricFromExperiment(exp, aMetric):
-    print "EXTracting histogscatterrrrram"
     basePath = os.path.join(sampleDataPath, exp)
     ## Give shell command to move to correct path
     
@@ -129,11 +126,10 @@ def extractScatterplotMetricFromExperiment(exp, aMetric):
         grepRes = subprocess.Popen('cd '+ basePath+"/"+benchmarkname + '; grep -ris "'+ aMetric + '" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
        
         ## Look for Exp folder
-        if not os.path.exists(outputDataPath + exp +"/"+benchmarkname):
-            os.makedirs(outputDataPath + exp +"/"+benchmarkname)
-    
+        folderName = generateOutputFolderForExperimentAndScatterPlotMetricAndBenchmark(exp, aMetric, benchmarkname)
+
         ##Create an output file with the metric name.
-        FILE = open(outputDataPath + exp + "/" + benchmarkname + "/" + aMetric + ".js","w")
+        FILE = open(folderName + "/" + aMetric + ".js","w")
        
         ## Open json object
         FILE.write("datatest[\"" + exp + benchmarkname + "\"] =" )
@@ -147,8 +143,26 @@ def extractScatterplotMetricFromExperiment(exp, aMetric):
         FILE.write(";")
         FILE.close()
 
-    
-        
-        
+def generateOutputFolderForExperimentAndHistogramMetric(exp, metric):
+    folderName = outputDataPath + exp + "/"
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
+    return folderName
+
+def generateOutputPathForExperimentAndHistogramMetric(exp, metric):
+    return generateOutputFolderForExperimentAndHistogramMetric(exp, metric) + metric + ".js"
+
+def generateBaseOutputFolderForExperimentAndScatterPlotMetric(exp, metric):
+    folderName = outputDataPath + exp + "/"
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
+    return folderName;
+
+def generateOutputFolderForExperimentAndScatterPlotMetricAndBenchmark(exp, metric, benchmark):
+    baseFolderName = generateBaseOutputFolderForExperimentAndScatterPlotMetric(exp, metric);
+    folderName = os.path.join(baseFolderName, benchmark)
+    if not os.path.exists(folderName):
+        os.makedirs(folderName)
+    return folderName       
 
 

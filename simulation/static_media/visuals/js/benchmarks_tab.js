@@ -1,6 +1,9 @@
 /* on startup */
 $("#benchmark-link").click(function() {
-	populateBenchmarks();
+	if (benchmark_should_update) {
+		populateBenchmarks();
+		benchmark_should_update = false;
+	}
 });
 
 
@@ -26,6 +29,26 @@ function benchmarkResponse(responseText, statusText, xhr, $form)  {
 			pos++;
 		}
 	}
+	$(".benchmark_checkbox").each(function() {
+		$(this).click(function() {
+			benchmark_changed = true;
+		})
+	})
+
+	if (!benchmark_loaded) {
+		var benchmarks = new Array();
+		$('.benchmark_id').each(function() {
+			benchmarks.push(this.getAttribute('value'))
+		})
+		
+		$('.benchmark_checkbox').each(function() {
+			console.log($(this).attr('value'));
+			if (benchmarks.indexOf($(this).attr('value')) > -1) {
+				$(this).attr('checked', 'yes')
+			}
+		})
+	}
+	benchmark_loaded = true;
 }
 
 function populateBenchmarks() {
@@ -35,3 +58,5 @@ function populateBenchmarks() {
     }; 
 	$("#argForm").ajaxSubmit(options);
 }
+
+

@@ -1,8 +1,7 @@
 var chart;
 
 var benchmarks = new Array();
-$('.benchmark').each(function() {
-	console.log("benchmark");
+$('.benchmark_id').each(function() {
 	benchmarks.push(this.getAttribute('value'))
 })
 
@@ -13,30 +12,27 @@ $('.experiment').each(function() {
 
 var metric_id = document.getElementById('metric_id').getAttribute('value');
 var visible_names = new Array();
-var visible_data = new Array();
+var temp_data = new Array();
 var lowerStack = new Array();
-
-var all_data = [];
 
 for (var exp_i = 0; exp_i < experiments.length; exp_i++) {
 	var data = datatest[experiments[exp_i]];
-	var visible_data = [];
+	var temp_data = [];
 	for (var i = 0; i < data.length; i++) {
 		var data_item = data[i];
 		for (var parsed_key in data_item) {
 			parsed_name = parsed_key.replace("Z",".").replace("Z",".");
 			if (benchmarks.indexOf(parsed_name) > -1) {
 				visible_names.push(parsed_name);
-				visible_data.push(data_item[parsed_key][0]);
+				temp_data.push(data_item[parsed_key][0]);
 			}
 		}
 	}
-	all_data.push({
+	visible_data.push({
 		name: experiments[exp_i],
-        data: visible_data
+        data: temp_data
 	})
 }
-console.log(all_data);
 
 $(document).ready(function() {
     chart = new Highcharts.Chart({
@@ -83,6 +79,6 @@ $(document).ready(function() {
                 borderWidth: 0
             }
         },
-        series: all_data
+        series: visible_data
     });
 });

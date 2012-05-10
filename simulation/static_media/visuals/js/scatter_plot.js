@@ -1,7 +1,7 @@
 var chart;
 
 var benchmark = "";
-$('.benchmark').each(function() {
+$('.benchmark_id').each(function() {
 	benchmark = this.getAttribute('value');
 })
 
@@ -11,8 +11,6 @@ $('.experiment').each(function() {
 })
 
 var metric_id = document.getElementById('metric_id').getAttribute('value');
-
-var visible_data = new Array();
 
 var all_data = [];
 var dataname = experiment+benchmark;
