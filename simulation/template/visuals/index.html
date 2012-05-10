@@ -242,7 +242,7 @@ $('.experiment').each(function() {
 
 	{% for experiment in experiments_selected %}
 		{% for benchmark in benchmarks_selected %}
-	   		<script type="text/javascript" src="/parsedExperiment/{{experiment.0}}/{{experiment.1}}/{{benchmark}}/{{metric}}.js"></script>
+	   		<script type="text/javascript" src="/parsedExperiments/{{experiment.0}}/{{experiment.1}}/{{benchmark}}/{{metric}}.js"></script>
 	   	{% endfor %}
 	{% endfor %}	
 	<script type="text/javascript" src="/static_media/visuals/js/scatter_plot.js"></script>
