@@ -23,7 +23,7 @@
   	color: black;
 }
 
-#metric-error-message {
+.msgVal {
 	font: 20px helvetica sans-serif;
 	text-align: center;
 	margin: 10px;

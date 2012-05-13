@@ -11,13 +11,15 @@
 <script src="/static_media/js/jquery.tablesorter.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="/static_media/js/jquery.equalHeight.js"></script>
 <script type="text/javascript" src="/static_media/js/jquery.autoSuggest.packed.js"></script>
+<script type="text/javascript" src="/static_media/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static_media/js/spin.min.js"></script>
 <script type="text/javascript">
-	/* Make all columns equal height */
+	/************** Make all columns equal height **************/
 	$(function() {
 		$('.column').equalHeight();
 	});
 	
-	/* Add item to auto sugget to exp_list and make ready*/
+	/************** Add item to auto sugget to exp_list and make ready **************/
 	var itemList = new Array();
 	var tmp;
 	{% for bench in speccpu %}
@@ -34,7 +36,7 @@
 			asHtmlID: "1"});
 	});
 	
-	/* Add item to auto sugget to baseExpList and make ready*/
+	/************** Add item to auto sugget to baseExpList and make ready **************/
 	var baseExpList = new Array();
 	var tmp;
 	{% for cur in baseExp %}
@@ -50,7 +52,7 @@
 			asHtmlID: "2"});
 	});
 
-	/* Add item to auto sugget to extExpList and make ready*/
+	/************** Add item to auto sugget to extExpList and make ready **************/
 	var extExpList = new Array();
 	var tmp;
 	{% for cur in extExp %}
@@ -87,21 +89,33 @@ $("#accordion").tabs("#accordion div.pane", {
 					.attr('checked', this.checked);
 });
  
+ // ********** Show response after done **********
+ var spinner = new Spinner(opts);
+ function showResponse(responseText, statusText, xhr, $form)  {
+ 		spinner.stop();
+		var baseUrl = getBaseURL();
+		window.location.href = baseUrl + "config/getCondor";
+}
 // ********** Submit needed values to server **********
 
  $('#run').click(
  	function() {
- 		var suite = $("select#bench").val();
- 		suite = "#" + suite + 'form';
- 		$(suite).find("td").each(function() {
- 			$(this).find("input").attr("name",$(this).text());
- 		});
- 		$("#argtable").find("tbody > tr > .edit").each(function() {
- 			var input = $("<input>").attr("type", "hidden").attr("name", $(this).attr('name')).val($(this).html());
- 			$('#argtable').append($(input));
- 		});
- }); 
+ 		if($("#id_binFile").val() == "") {
+ 			document.getElementById("errorMsg").style.display = "block";
+ 			return false;
+ 		}
+ 		document.getElementsByName('darkBackgroundLayer')[0].style.display='';
+ 		var target = document.getElementById('argForm');
+		spinner.spin(target);
+ 		var options = {
+ 			url: '/config/runExp',
+ 			success: showResponse
+ 		};
+ 		$("#argForm").ajaxSubmit(options);
+ 		return false;
+ 	}); 
 {% endblock %}
+
 
 //************************************************
 // Breadcrumbs
@@ -121,7 +135,7 @@ $("#accordion").tabs("#accordion div.pane", {
 //************************************************
 {% block content %}
 <section id="main" class="column">
-<form name="argForm" id="argForm" action="runExp" method="post" enctype="multipart/form-data">
+<form name="argForm" id="argForm" action="" method="post" enctype="multipart/form-data">
 	<article class="module width_full">
 	<div id="accordion">
 		<header>
@@ -132,7 +146,7 @@ $("#accordion").tabs("#accordion div.pane", {
 			<!-- EXPERIMENT NAME -->
 			<fieldset>
 				<label>Experiment Name</label> <b style="margin-left:10px">{{ expName }}</b>
-				<input type="hidden" id="expName" name="expName" value="{{ expName }}" />
+				<input type="hidden" id="expName" name="expName" value="{{ expName }}" />		
 			</fieldset>
 			
 			<!-- END PATH TO EXECUTABLE -->
@@ -140,6 +154,7 @@ $("#accordion").tabs("#accordion div.pane", {
 			<!-- PATH TO EXECUTABLE -->
 			<fieldset>
 				{{ binFile }}
+				<div id="errorMsg" style="color:red; margin-left:10px; display:none;">Please choose file to upload</div>
 			</fieldset>
 			<!-- END PATH TO EXECUTABLE -->
 
@@ -157,16 +172,15 @@ $("#accordion").tabs("#accordion div.pane", {
 			<!-- START SIZE PREF -->
 			<fieldset>
 				<label>Size Preference</label>
-				<span style="margin-left:10px">sizepref : </span><br /><input type="text" name="size_pref" id="size_pref" value="100M" />
-				<span style="margin-left:10px">size :</span><input type="text" name="size" id="size" value="100000000" />
+				<span style="margin-left:10px">sizepref : </span><br /><input type="text" name="size_pref" id="size_pref" value="{{sizepref}}" />
+				<span style="margin-left:10px">size :</span><input type="text" name="size" id="size" value="{{size}}" />
 			</fieldset>
 			<!-- END SIZE PREF -->
 			
 			<!-- START COMMON ARGUMENT -->
 			<fieldset>
 				<label> Common Arguments</label>
-				<textarea id="common" name="common" rows=4">-restore true -warmup_insns 10000000 -heartbeat_cycles 100000 -heartbeat_insns 100000 -insn_limit #{size} -validator true -mem_accurate_model true -pref true -pref_stride true
-				</textarea>
+				<textarea id="common" name="common" rows=4">{{common}}</textarea>
 			</fieldset>
 			<!-- END COMMON ARGUMENT -->
 			
@@ -212,4 +226,25 @@ $("#accordion").tabs("#accordion div.pane", {
 	<input type="submit" id="run" value="Run Experiment">
 </section>
 </form>
+
+<div class="darkenBackground" name="darkBackgroundLayer" id="darkBackgroundLayer"></div>
+<script type="text/javascript" language="javascript">
+		document.getElementsByName("darkBackgroundLayer")[0].style.display = "none";
+		var opts = {
+				  lines: 13, // The number of lines to draw
+				  length: 7, // The length of each line
+				  width: 4, // The line thickness
+				  radius: 10, // The radius of the inner circle
+				  rotate: 0, // The rotation offset
+				  color: '#000', // #rgb or #rrggbb
+				  speed: 1, // Rounds per second
+				  trail: 60, // Afterglow percentage
+				  shadow: false, // Whether to render a shadow
+				  hwaccel: false, // Whether to use hardware acceleration
+				  className: 'spinner', // The CSS class to assign to the spinner
+				  zIndex: 2e9, // The z-index (defaults to 2000000000)
+				  top: 'auto', // Top position relative to parent in px
+				  left: 'auto' // Left position relative to parent in px
+				};
+</script>
 {% endblock %}

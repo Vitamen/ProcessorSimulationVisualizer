@@ -20,12 +20,15 @@ urlpatterns = patterns('',
     url(r'^updateMetricType', 'visuals.metrics.updateMetricType'),
     url(r'^metrics/$', 'visuals.metrics.index'),
     url(r'^browse/$', 'experimentManager.views.browse'),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^setDefault/$', 'experimentManager.views.setDefault'),
+    url(r'^updateDefault/$', 'experimentManager.views.updateDefault'),
+    
     #Url to read lines from a file
     url(r'^read/$', 'dataParser.parser.readFile'),
     url(r'^listExp/$','dataParser.parser.getExperimentList'),
     url(r'^getData/$','dataParser.parser.getDataFor'),
     url(r'^extractBenchmarks/$', 'dataParser.parser.parseExperiment'),
+    url(r'^$', 'experimentManager.views.config'),
 )
     # Examples:
     # url(r'^$', 'simulation.views.home', name='home'),

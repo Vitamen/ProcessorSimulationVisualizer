@@ -1,6 +1,9 @@
 /* on startup */
 $("#benchmark-link").click(function() {
-	if (benchmark_should_update) {
+	//Check if experiment has been selected and only populate if at least one selected
+	var expSelected = 
+		document.getElementsByName("expName")[0].getAttribute("value") != "";
+	if (expSelected && benchmark_should_update) {
 		populateBenchmarks();
 		benchmark_should_update = false;
 	}

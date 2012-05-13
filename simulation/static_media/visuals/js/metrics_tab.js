@@ -1,6 +1,17 @@
 /* on startup */
 $("#metric-link").click(function() {
-	if (metric_should_update) {
+	//Reset no metric
+	$("#metric-no-metric").hide();
+	
+	//Check if experiment has been selected and show message
+	var noExpSelected = 
+		document.getElementsByName("expName")[0].getAttribute("value") == "";
+	if(noExpSelected) $("#metric-error-message").show();
+	else $("#metric-error-message").hide();
+	
+	//Parse and show message if at least one experiment is selected
+	if (!noExpSelected && metric_should_update) {
+		$("#metric-loading-message").show();
 		populateMetricsList();
 		metric_should_update = false;
 	}
@@ -8,13 +19,14 @@ $("#metric-link").click(function() {
 
 /* populate the metrics list with valid metric types */
 function showResponse(responseText, statusText, xhr, $form)  {
+	$("#metric-loading-message").hide();
 	var metric_id = $('#metric_id').attr("value");
 	responseText = responseText.replace(/\'/g,"\"").replace(/u/g,"")
 	var myjsonObject = JSON.parse(responseText);
 	if (myjsonObject.metrics.length == 0) {
 		$("#tab2 label").hide();
 		$("#metrics_list").hide();
-		$("#metric-error-message").show();
+		$("#metric-no-metric").show();
 	} else {
 		$("#tab2 label").show();
 		var metrics_list = $('#metrics_list');
@@ -28,7 +40,6 @@ function showResponse(responseText, statusText, xhr, $form)  {
 			metrics_list.val(metric_id);
 		}
 		metrics_list.show();
-		$("#metric-error-message").hide();
 	}
 	metric_loaded = true;
 }

@@ -116,7 +116,7 @@ INSTALLED_APPS = (
     'condorManager',
     'experimentManager',
     'visuals',
-    'condorManager'
+    'condorManager',
 )
 
 # A sample logging configuration. The only tangible logging

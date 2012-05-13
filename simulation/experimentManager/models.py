@@ -87,3 +87,7 @@ def findOrCreateMetricByName(metricName):
 class ExperimentMetric(models.Model):
     expname = models.ForeignKey(Experiments)
     metricname = models.ForeignKey(Metric)
+
+class DefaultValues(models.Model):
+    name = models.CharField(max_length=200)
+    value = models.CharField(max_length=1000)

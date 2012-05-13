@@ -83,7 +83,9 @@ $('.experiment').each(function() {
 {% block breadcrumbs %}
 <div class="breadcrumbs_container">
 	<article class="breadcrumbs">
-		<a href="/chart">Experiment Graphs</a>
+		<a href="/browse">Browse Data</a>
+		<div class="breadcrumb_divider"></div>
+		<a href="/chart">Visualize Data</a>
 	</article>
 </div>
 {% endblock %}
@@ -197,7 +199,14 @@ $('.experiment').each(function() {
 				<label>Select a Metric:</label>
 				<select style="width:92%;" id="metrics_list" name="metric">
 				</select>
-				<div id="metric-error-message">Please select an experiment first!</div>
+				<div class="msgVal" id="metric-error-message">Please select an experiment first!</div>
+				<div class="msgVal" id="metric-no-metric">The selected experiment doesn't have any metric!</div>
+				<div class="msgVal" id="metric-loading-message">Please wait while the metric is being parsed!</div>
+				<script type="text/javascript">
+					$("#metric-error-message").hide()
+					$("#metric-no-metric").hide();
+					$("#metric-loading-message").hide();
+				</script>
 			</div>
 			<!-- END METRIC -->
 			
