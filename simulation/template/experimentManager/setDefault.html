@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+//************************************************
+// Attach page-specific javascripts
+//************************************************
+
+{% block javascript %}
+{% endblock %}
+
+//************************************************
+// Javascripts to run on document ready
+//************************************************
+
+{% block onready %}
+{% endblock %}
+
+//************************************************
+// Breadcrumbs
+//************************************************
+{% block breadcrumbs %}
+<div class="breadcrumbs_container">
+	<article class="breadcrumbs">
+		<a href="/setDefault">Default Configuration</a>
+		<div class="breadcrumb_divider"></div>
+		<a href="/metrics">Metric Management</a>
+	</article>
+</div>
+{% endblock %}
+//************************************************
+// Config block contents
+//************************************************
+
+{% block content %}
+<section id="main" class="column">
+
+<form name="argForm" id="argForm" action="/updateDefault/" method="post">
+	<!-- START SIZE PREF -->
+	<fieldset>
+		<label>Size Preference</label>
+			<span style="margin-left:10px">sizepref : </span><br /><input type="text" name="size_pref" id="size_pref" value="{{size_pref.value}}" />
+			<span style="margin-left:10px">size :</span><input type="text" name="size" id="size" value="{{size.value}}" />
+		</fieldset>
+	<!-- END SIZE PREF -->
+	<!-- START COMMON ARGUMENT -->
+	<fieldset>
+		<label> Common Arguments</label>
+		<textarea class="textChange" id="common" name="common" rows=4">{{common.value}}</textarea>
+	</fieldset>
+	<!-- END COMMON ARGUMENT -->
+	
+	<div class="spacer"></div>
+	<input type="submit" id="run" value="Save Changes">
+</form>
+</section>
+{% endblock %}
