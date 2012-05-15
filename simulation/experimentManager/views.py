@@ -1,5 +1,8 @@
 from django.http import HttpResponse
 from django.template import Context,loader, RequestContext
+from simulation.condorManager.CondorManager import Manager
+from simulation.condorManager.models import CondorJob
+from simulation.settings import EXP_ROOT_DIR
 from datetime import datetime
 from models import *
 import re, os, generator, sys
@@ -20,10 +23,11 @@ def config(request):
     sizepref = DefaultValues.objects.get(name='size_pref').value
     size = DefaultValues.objects.get(name='size').value
     common = DefaultValues.objects.get(name='common').value
-    #load page
-    t = loader.get_template("experimentManager/config.html")
     binFile = BinRevForms()
-    c = Context({
+    
+    #Check if anything is running on condor. If yes, put
+    #expName warning sign.
+    retDict = {
                  'expName' : expName,
                  'speccpu' : speccpu,
                  'spec2006' : spec2006,
@@ -33,7 +37,18 @@ def config(request):
                  'sizepref' : sizepref,
                  'size' : size,
                  'common' : common,
-            })
+            }
+    manage = Manager()
+    val = manage.getStatus()
+    if "0 jobs;" not in val: 
+        f = open(os.path.join(EXP_ROOT_DIR,"curExp"))
+        exp = f.readline()
+        if exp != "": retDict['curExp'] = exp
+        f.close()
+        
+    #load page
+    t = loader.get_template("experimentManager/config.html")
+    c = Context(retDict)
     return HttpResponse(t.render(c))
 
 #########################################################
@@ -41,9 +56,19 @@ def config(request):
 #########################################################
 def runExp(request):
     
-    #Use the generator to generate condor.sub anBd setup
+    #Use the generator to generate condor.sub and setup
     #relevant directories
-    generator.generate(request)
+    condorFile = generator.generate(request)
+    
+    #Clear old condor job by removing everything in database
+    #and stop all jobs
+    CondorJob.objects.all().delete()
+    Manager().stopAllJobs()
+    
+    #Start job and return success
+    condorFile = os.path.join(EXP_ROOT_DIR,"tmp","condor.sub")
+    manage = Manager()
+    manage.startJob(condorFile)
     return HttpResponse("Success!")
     
 #########################################################
@@ -55,14 +80,6 @@ def browse(request):
     t = loader.get_template("experimentManager/expbrowse.html")
     c = RequestContext( request,
                         {'experiments' : experiments})
-    return HttpResponse(t.render(c))
-
-#########################################################
-# Get the static page for Condor
-#########################################################
-def getCondor(request):
-    c = Context()  
-    t = loader.get_template("experimentManager/sampleoutput.html")
     return HttpResponse(t.render(c))
 
 #########################################################

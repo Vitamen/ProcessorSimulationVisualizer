@@ -135,6 +135,11 @@ $("#accordion").tabs("#accordion div.pane", {
 //************************************************
 {% block content %}
 <section id="main" class="column">
+{% if curExp %}
+<h4 class="alert_info">
+{{curExp}} is currently running. Running a new experiment will delete previous jobs
+</h4>
+{% endif %}
 <form name="argForm" id="argForm" action="" method="post" enctype="multipart/form-data">
 	<article class="module width_full">
 	<div id="accordion">
@@ -172,8 +177,8 @@ $("#accordion").tabs("#accordion div.pane", {
 			<!-- START SIZE PREF -->
 			<fieldset>
 				<label>Size Preference</label>
-				<span style="margin-left:10px">sizepref : </span><br /><input type="text" name="size_pref" id="size_pref" value="{{sizepref}}" />
-				<span style="margin-left:10px">size :</span><input type="text" name="size" id="size" value="{{size}}" />
+				<label class="sublabel">sizepref :</label><br /><input type="text" name="size_pref" id="size_pref" value="{{sizepref}}" />
+				<label class="sublabel">size :</label><input type="text" name="size" id="size" value="{{size}}" />
 			</fieldset>
 			<!-- END SIZE PREF -->
 			

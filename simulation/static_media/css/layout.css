@@ -774,6 +774,11 @@ fieldset label {
 	text-transform: uppercase;
 }
 
+fieldset .sublabel {
+	font-weight: normal;
+	text-transform: none;
+	margin: 0px;
+}
 fieldset input[type=file] {
 	margin-left: 10px;
 }

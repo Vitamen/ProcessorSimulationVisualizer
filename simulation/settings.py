@@ -146,13 +146,12 @@ LOGGING = {
 #These configurations are related to condor manager module
 CONDOR_DAEMON = {
                  'interval' : 2,       #The interval to check log file for update
-                 'waitTime' : 2
 }
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
-PUSHER_APP_ID = '16329'
-PUSHER_KEY = '9bc222a1d5058587fb2c'
-PUSHER_SECRET = '0b72799610efa7a8fc90'
+PUSHER_APP_ID = '16328'
+PUSHER_KEY = 'e217c8fb76bbbb16a8cd'
+PUSHER_SECRET = 'cdfa7c0593f8a58ebe79'
 
 #These configurations are used by experiment manager
 EXP_ROOT_DIR =  os.path.join(PROJECT_PATH,"experiments")

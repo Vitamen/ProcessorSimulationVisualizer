@@ -9,7 +9,6 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^config/$', 'experimentManager.views.config'),
     url(r'^config/runExp$', 'experimentManager.views.runExp'),
-    url(r'^config/getCondor$', 'experimentManager.views.getCondor'),
     url(r'^config/updateArgs$', 'experimentManger.view.updateArgs'),
     url(r'^chart/$', 'visuals.chart.index'),
     url(r'^chart/(?P<username>)/$', 'visuals.chart.metric'),
@@ -22,7 +21,9 @@ urlpatterns = patterns('',
     url(r'^browse/$', 'experimentManager.views.browse'),
     url(r'^setDefault/$', 'experimentManager.views.setDefault'),
     url(r'^updateDefault/$', 'experimentManager.views.updateDefault'),
-    
+    url(r'^config/getCondor$', 'condorManager.views.initTable'),
+    url(r'^getTableUpdates/$', 'condorManager.views.updateTable'),
+    url(r'^handleJobs/$', 'condorManager.views.handleJobs'),
     #Url to read lines from a file
     url(r'^read/$', 'dataParser.parser.readFile'),
     url(r'^listExp/$','dataParser.parser.getExperimentList'),

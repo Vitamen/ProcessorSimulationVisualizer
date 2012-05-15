@@ -1,16 +1,99 @@
 from django.http import HttpResponse
-import pusher, simplejson
-from django.shortcuts import render_to_response
-import simulation.settings as settings
+from django.template import loader, Context
+from CondorManager import Manager
+from simulation.condorManager import CondorJobPopulate
+from simulation.condorManager.models import CondorJob
+from simulation.experimentManager import generator
+from simulation.settings import EXP_ROOT_DIR
+from django.core import serializers
+import sys, os
 
-def tracking(request):
-    return render_to_response("tracking.html")
+#=================================================================#
 
-def endPoint(request):
-    pusher.app_id = settings.PUSHER_APP_ID
-    pusher.key = settings.PUSHER_KEY
-    pusher.secret = settings.PUSHER_SECRET
+'''
+    Show the first page and initialize the table for showing condor status
+'''
+def initTable(request):
+    #Populate the database with current jobs
+    manage = Manager()
+    retVal = manage.getStatus()
+    CondorJobPopulate.populateJobs(retVal)
     
-    p = pusher.Pusher()
-    p['test_channel'].trigger('condor_channel', ['hi'])
-    return HttpResponse("Done")
+    #Get current running experiment & jobs
+    retDict = {'jobs' : CondorJob.objects.all()}
+    f = open(os.path.join(EXP_ROOT_DIR,"curExp"),'r')
+    curExp = f.readlines()
+    
+    if len(curExp) > 0 : retDict['expName'] = curExp[0]
+    
+    #Return
+    c = Context(retDict)  
+    t = loader.get_template("condorManager/condorjobs.html")
+    return HttpResponse(t.render(c))
+
+#=================================================================#
+
+'''
+    Show the first page and initialize the table for showing condor status
+'''
+def updateTable(request):
+    #Use CondorJobPopulat to get updates
+    manage = Manager()
+    retVal = manage.getStatus()
+    changedJobs = CondorJobPopulate.checkUpdate(retVal)
+    data = serializers.serialize('json', changedJobs)
+    print sys.stderr, data
+    return HttpResponse(data, "application/json")
+
+#=================================================================#
+
+'''
+    Handle the job passed in
+'''
+def handleJobs(request):
+    if 'stop' in request.POST: changedJobs = stopOrDeleteJob(request, "stop")
+    elif 'delete' in request.POST: changedJobs = stopOrDeleteJob(request, "delete")
+    elif 'restart' in request.POST: changedJobs = restartJob(request)
+    data = serializers.serialize('json', changedJobs)
+    return HttpResponse(data, "application/json")
+    
+#=================================================================#
+
+'''
+    Stop or delete the selected job from running and marked as removed
+'''
+def stopOrDeleteJob(request, jobType):
+    manage = Manager()
+    jobs = sepByComma(request.POST['subName'])
+    changedJobs = []
+    for job in jobs:
+        job = job.strip()
+        if job == "": continue
+        if jobType == "stop" : 
+            manage.stopJob(job)
+            changedJobs.append(CondorJobPopulate.updateStopJob(job))
+        elif jobType == "delete" :
+            CondorJobPopulate.deleteJob(job)
+    return changedJobs
+
+
+#=================================================================#
+
+'''
+    Prepare the selected job for resubmission. Use condor_q -long
+    to get required arguments to resubmitt
+'''
+def restartJob(request):
+    jobs = sepByComma(request.POST['subName'])
+    changedJobs = []
+    for job in jobs:
+        job = job.strip()
+        if job == "": continue
+        generator.makeResubmission(job)
+    return changedJobs
+#=================================================================#
+
+def sepByComma(value):
+    return [x.strip() for x in value.split(",")]
+
+#=================================================================#

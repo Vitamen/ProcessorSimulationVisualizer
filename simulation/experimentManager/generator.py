@@ -1,6 +1,7 @@
 from simulation.settings import EXP_ROOT_DIR, EXECUTABLE_PATH
 import os, datetime, sys
 from models import Benchmarks, ExtendedExperimentTypes, Experiments, BenchmarkSuite
+from simulation.condorManager import CondorManager
 
 ###############################################################
 # getBenchmarkSuite
@@ -42,8 +43,13 @@ def generate(request):
     fileName = myFile.name
     makeCondorSub(request, fileName, dirName)
     
-    #Start experiment by submitting  condor.sub to target
+    #Store current running experiment in curExp
+    f = open(os.path.join(EXP_ROOT_DIR,"curExp"), "w")
+    f.write(request.POST['expName'])
+    f.close()
     
+    #Return path to generated condor.sub file
+    return dirName + os.sep + "condor.sub"
     
 ###############################################################
 # Decide on directory name to create for this experiment
@@ -133,6 +139,49 @@ def makeCondorSub(request, fileName, dirName):
                                 os.mkdir(bFolder)
     f.close()
 
+###############################################################
+# Make condor.sub for resubmission
+###############################################################
+def makeResubmission(ids):
+    #Get current running submission
+    f = open(os.path.join(EXP_ROOT_DIR, "curExp"))
+    val = f.readlines()
+    if len(val) > 0: curExp = val[0]
+    else: return
+    
+    #Extract the header from relevant condor.sub file
+    #and write temporary submission
+    origFile = os.path.join(EXP_ROOT_DIR, curExp, "condor.sub")
+    tmpFile = os.path.join(EXP_ROOT_DIR, curExp, "condor.sub.tmp")
+    f = open(origFile, "r")
+    fp = open(tmpFile, "w")
+    line = f.readline()
+    while line:
+        fp.write(line)
+        if "Requirements" in line: break
+        line = f.readline()
+        
+    #Use CondorManager to get the long status of ids & write
+    manage = CondorManager.Manager()
+    for curId in ids:
+        retVal = manage.getStatusLong(curId)
+        arg = findArgument(retVal)
+        fp.write("Arguments = " + arg + "\n")
+        fp.write("Queue\n\n")
+    f.close()
+    fp.close()
+    return tmpFile
+
+###############################################################
+# Find argumetn from retVal
+###############################################################
+def findArgument(retVal):
+    lines = retVal.split("\n")
+    for line in lines:
+        if "Arguments" in line:
+            arg = line[line.index(' = "')+5:-1]
+            return arg
+        
 ###############################################################
 # Save experiment to database
 ###############################################################

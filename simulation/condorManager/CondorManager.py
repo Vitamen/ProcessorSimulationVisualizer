@@ -1,6 +1,5 @@
-import logging, subprocess, ntpath, re, CondorDaemon
-from CondorData import CondorSubmission, CondorJob
-
+import logging, subprocess, ntpath, sys
+from simulation.condorManager import CondorJobPopulate
 '''
 Provides the interface for talking to Condor cluster.
 
@@ -24,7 +23,6 @@ class Manager(object):
         report to error logger
     '''
     def __init__(self):
-        self.daemonMap = {}
         retVal = Manager.callCondor(self, ["condor", "-version"])
         if retVal == False:
             logging.error("Condor is not installed on current computer." +
@@ -35,13 +33,8 @@ class Manager(object):
     
     '''
         Submit job to condor using the file specified by the ABSOLUTE path
-        
-        @param The location of the submission file to send to condor.
-               The submission file must specify a log location
-        @return The CondorDaemon started by the process. False otherwise
     '''
     def startJob(self,path):
-        
         #Check that the file specified by path exists.
         absname = ntpath.abspath(path)
         try :
@@ -50,34 +43,10 @@ class Manager(object):
             logging.error("The path specified does not exist")
             raise
         
-        #Extract log file name for CondorDaemon
-        condorSub = open(path, "r").read()
-        lineFound = re.search("^[Ll]og[ \t]*=.+", condorSub, re.MULTILINE)
-        if lineFound :
-            logFile = re.split("=[ \t]*", lineFound.group(0))[1]
-        if not logFile :
-            logging.error("The submission file did not specify a log location")
-            raise
-        
         #Submit to condor & return if false
-        retVal = Manager.callCondor(self, ["condor_submit", "-verbose", path])
+        retVal = Manager.callCondor(self, ["condor_submit", path])
         if retVal == False:
             return False
-        
-        #Create a model of condor submission along with condor jobs
-        condorSubmission = self.getModels(path, retVal)
-        
-        #Spawn CondorDaemon process to keep track of condor submission
-        #Store this in a map. If the map already contain this, stop previous
-        #job and run again
-        try:
-            m = self.daemonMap[path]
-            m.stop()
-        except KeyError:
-            pass
-        m = CondorDaemon.CondorDaemon(logFile,condorSubmission).start()
-        self.daemonMap[path] = m
-        return m
          
     #=================================================================#
     
@@ -88,22 +57,33 @@ class Manager(object):
         @return True if cancellation is successful. False otherwise
     '''
     def stopJob(self,condorid):
-        return Manager.callCondor(self, "condor_rm", condorid)
+        return Manager.callCondor(self, ["condor_rm", condorid])
         
     #=================================================================#
     
     '''
-        Stop all jobs owned by the user
-        
-        @param The name of the user to stop all jobs
-        @return True if cancellation is successful. False otherwise
+        Stop all jobs currently running
     '''
-    def stopJobAll(self,user):
-        return Manager.callCondor(self, "condor_rm", user)
+    def stopAllJobs(self):
+        return Manager.callCondor(self, ["condor_rm", "-all"])
         
+    #=================================================================#
+    
+    '''
+        Get the status of local Condor jobs
+    '''
+    def getStatus(self):
+        return Manager.callCondor(self, "condor_q")
     
     #=================================================================#
-
+    
+    '''
+        Get the status of local Condor jobs in long format
+    '''
+    def getStatusLong(self, myId):
+        return Manager.callCondor(self, ["condor_q", myId, "-long"])
+    
+    #=================================================================#
     '''
         Helper method for calling condor commands and getting results back
         @param The command and arguments to call condor with
@@ -122,55 +102,8 @@ class Manager(object):
             else:
                 output = subprocess.check_output(command)
             return output
-        except subprocess.CalledProcessError, e:
+        except (subprocess.CalledProcessError,OSError), e:
             logging.error(str(e))
             return False
-    
-    #=================================================================#
-    
-    '''
-        Helper method that uses retVal to create and store condor submissions
-        and condor jobs
-        @param the path to start this job
-        @param the value use to create model
-        @return the CondorSubmission model that contains information about condor jobs
-    '''
-    def getModels(self,path,retVal):
-        
-        #Split jobs
-        modelValue = retVal.strip()
-        jobs = re.split("\*\* Proc ", modelValue)
-        jobs = jobs[1:]
-        submission = None
-
-        #Go through each job to extract condorJob
-        firstJob = True
-        for job in jobs:
-            #During all jobs, extract other values
-            job = job.strip()
-            lines = job.split("\n")
-            job_id = lines[0][:-1] 
-                                        
-            #During the first job, extract the values that are the
-            #same across all jobs.
-            if firstJob:
-                for line in lines:
-                    if re.match("^Cmd",line):
-                        cmd = line[line.find('"')+1:len(line)-1]
-                    elif re.match("^Owner",line):
-                        owner = line[line.find('"')+1:len(line)-1]
-                submission = CondorSubmission(path=path,cmd=cmd,owner=owner)
-                firstJob = False
-                
-            #Get recurring values
-            for line in lines:
-                if re.match("^Args", line):
-                    args = line[line.find('"')+1:len(line)-1]
-                    
-            #Create the object for a condorjob and add to condorSubmission
-            condorJob = CondorJob(job_id=job_id,args=args,condor_submission=submission)
-            submission.condorJobs.append(condorJob)
-        
-        return submission
     
     #=================================================================#
