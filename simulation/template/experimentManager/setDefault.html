@@ -41,13 +41,27 @@
 			<label class="sublabel">size:</label><input type="text" name="size" id="size" value="{{size.value}}" />
 		</fieldset>
 	<!-- END SIZE PREF -->
+	
 	<!-- START COMMON ARGUMENT -->
 	<fieldset>
-		<label> Common Arguments</label>
+		<label>Common Arguments</label>
 		<textarea class="textChange" id="common" name="common" rows=4">{{common.value}}</textarea>
 	</fieldset>
 	<!-- END COMMON ARGUMENT -->
 	
+	<!-- START BASE EXPERIMENT TYPES -->
+	<fieldset>
+		<label>Base Experiment Types</label>
+		<textarea class="textChange" id="common" name="common" rows=4">{{baseExp.value}}</textarea>
+	</fieldset>
+	<!-- END BASE EXPERIMENT TYPES -->
+	
+		<!-- START EXT EXPERIMENT TYPES -->
+	<fieldset>
+		<label>Extended Experiment Types</label>
+		<textarea class="textChange" id="common" name="common" rows=4">{{extExp.value}}</textarea>
+	</fieldset>
+	<!-- END EXT EXPERIMENT TYPES -->
 	<div class="spacer"></div>
 	<input type="submit" id="run" value="Save Changes">
 </form>

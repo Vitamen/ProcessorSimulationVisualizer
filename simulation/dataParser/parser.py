@@ -22,7 +22,7 @@ def getExperimentList(self):
 #######################################################
 
 def parseExperiment (subName, curExpName, metricType):
-    #Get current experiment object from database
+    #Get current experiment object from databases
     experiment_object = Experiments.objects.get(submissionName=subName, expName=curExpName)
     experiment_pk = experiment_object.pk
     path = os.path.join(EXP_ROOT_DIR,subName,"data",curExpName)

@@ -43,11 +43,6 @@ def generate(request):
     fileName = myFile.name
     makeCondorSub(request, fileName, dirName)
     
-    #Store current running experiment in curExp
-    f = open(os.path.join(EXP_ROOT_DIR,"curExp"), "w")
-    f.write(request.POST['expName'])
-    f.close()
-    
     #Return path to generated condor.sub file
     return dirName + os.sep + "condor.sub"
     

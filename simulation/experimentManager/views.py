@@ -25,8 +25,7 @@ def config(request):
     common = DefaultValues.objects.get(name='common').value
     binFile = BinRevForms()
     
-    #Check if anything is running on condor. If yes, put
-    #expName warning sign.
+    #load page
     retDict = {
                  'expName' : expName,
                  'speccpu' : speccpu,
@@ -38,15 +37,6 @@ def config(request):
                  'size' : size,
                  'common' : common,
             }
-    manage = Manager()
-    val = manage.getStatus()
-    if "0 jobs;" not in val: 
-        f = open(os.path.join(EXP_ROOT_DIR,"curExp"))
-        exp = f.readline()
-        if exp != "": retDict['curExp'] = exp
-        f.close()
-        
-    #load page
     t = loader.get_template("experimentManager/config.html")
     c = Context(retDict)
     return HttpResponse(t.render(c))
@@ -59,11 +49,6 @@ def runExp(request):
     #Use the generator to generate condor.sub and setup
     #relevant directories
     condorFile = generator.generate(request)
-    
-    #Clear old condor job by removing everything in database
-    #and stop all jobs
-    CondorJob.objects.all().delete()
-    Manager().stopAllJobs()
     
     #Start job and return success
     condorFile = os.path.join(EXP_ROOT_DIR,"tmp","condor.sub")
@@ -89,6 +74,10 @@ def setDefault(request):
     common = DefaultValues.objects.filter(name="common")
     size_pref = DefaultValues.objects.filter(name="size_pref")
     size = DefaultValues.objects.filter(name="size")
+    baseExp = DefaultValues.objects.filter(name="baseExp")
+    extExp = DefaultValues.objects.filter(name="extExp")
+    
+    print >>sys.stderr, common
     if len(common) == 0: 
         common = DefaultValues(name="common", value="null")
         common.save()
@@ -104,10 +93,22 @@ def setDefault(request):
         size.save()
     else: 
         size = size[0]
+    if len(baseExp) == 0:
+        baseExp = DefaultValues(name="baseExp", value="np : -pref false")
+        baseExp.save()
+    else:
+        baseExp = baseExp[0]
+    if len(extExp) == 0:
+        extExp = DefaultValues(name="effra_overlap0.5", value="-core_ra_efficient true -core_ra_efficient_overlap_T 0.5")
+        extExp.save()
+    else:
+        extExp = extExp[0]
     c = Context({
                     'common' : common,
                     'size_pref' : size_pref,
                     'size' : size,
+                    'baseExp' : baseExp,
+                    'extExp' : extExp
                  })  
     t = loader.get_template("experimentManager/setDefault.html")
     return HttpResponse(t.render(c))
