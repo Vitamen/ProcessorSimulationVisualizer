@@ -72,17 +72,22 @@ METRIC_CHART_TYPE = (
 class Metric(models.Model):
     metricname = models.CharField(max_length=200, primary_key=True)
     metrictype = models.CharField(max_length=2, choices=METRIC_CHART_TYPE)
+    isAggregate = models.BooleanField(default=False)
 
-def findOrCreateMetricByName(metricName):
+def findOrCreateMetricByName(metricName, aggregate = False):
     metrics = Metric.objects.filter(metricname=metricName);
     if len(metrics) == 1:
         return metrics[0]
     elif len(metrics) == 0:
-        metric = Metric.objects.create(metricname=metricName, metrictype='HISTOGRAM')
+        metric = Metric.objects.create(metricname=metricName, metrictype='HISTOGRAM', isAggregate = aggregate)
         return metric
     else:
         print "ERROR: duplicate"
         return None
+    
+class MetricAggregate(models.Model):
+    metric = models.ForeignKey(Metric)
+    evalString = models.CharField(max_length=512)
 
 class ExperimentMetric(models.Model):
     expname = models.ForeignKey(Experiments)

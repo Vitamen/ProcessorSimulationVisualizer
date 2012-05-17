@@ -3,6 +3,7 @@ import os.path
 import subprocess
 from simulation.settings import EXP_ROOT_DIR, PROJECT_PATH, PARSE_ROOT_DIR
 from simulation.experimentManager.models import *
+import re
 
 sampleDataPath = os.path.join(PROJECT_PATH, 'dataParser', 'SampleData')
 outputDataPath = PARSE_ROOT_DIR
@@ -56,12 +57,67 @@ def parseExperiment (subName, curExpName, metricType):
 
 def extractMetricFromExperiment (subName, expName,aMetric):      
     metric = findOrCreateMetricByName(aMetric)
-    if metric.metrictype == 'HISTOGRAM':
-        extractHistogramMetricFromExperiment(subName,expName,aMetric)
-    elif metric.metrictype == 'SCATTERPLOT':
-        extractScatterplotMetricFromExperiment(subName,expName,aMetric)
+
+    if metric.isAggregate:
+        extractMetricFromExperimentAndEvalStatement(subName,expName,aMetric)
+    else:
+        if metric.metrictype == 'HISTOGRAM':
+            extractHistogramMetricFromExperiment(subName,expName,aMetric)
+        elif metric.metrictype == 'SCATTERPLOT':
+            extractScatterplotMetricFromExperiment(subName,expName,aMetric)
 
 #######################################################
+
+def extractMetricFromExperimentAndEvalStatement(subName, expName, metric):
+    experiment = Experiments.objects.get(expName = expName)
+    metricAggregate = MetricAggregate.objects.get(metric = metric)
+    evalString = metricAggregate.evalString
+    pattern = r'{\w+}'
+    regex = re.compile(pattern, re.IGNORECASE)
+    allMetricData = []
+    isHistogram = metric.metricType == 'HISTOGRAM'
+    for match in regex.finditer(evalString):
+        if isHistogram:
+            metricData = getHistogramDataForMetricFromExperiment(subName, experiment, match.group())
+        else
+            metricData = getScatterplotDataForMetricFromExperiment(subName, experiment, match.group())
+        allMetricData.append(metricData)
+    
+    aggregateData = []
+    numDataPoints = 0;
+    if len(allMetricData) == 0:
+        return
+    else numDataPoints = len(allMetricData[0])
+    replace(    str, old, new[, maxsplit])
+
+    for i in range(0, len):
+        curEvalString = strip(evalString);
+        for match in regex.finditer(evalString):
+            curEvalString = replace(curEvalString, match.group(), allMetricData[match.lastindex][i])
+        aggregateData.append(eval(curEvalString))
+            
+        
+def getHistogramDataForMetricFromExperiment(subName, experiment, metric):
+    fileName = generateOutputPathForExperimentAndHistogramMetric(subName, experiment, metric)
+
+    if not os.path.exists(fileName):
+        extractHistogramMetricFromExperiment(experiment, metric)
+    
+    FILE = open(fileName, "r")
+    fileContents = FILE.read();
+    pattern = r'\[[A-Za-z0-9, ]+\]'
+    regex = re.compile(pattern, re.IGNORECASE)
+    matches = regex.findIter(fileContents)
+    if len(matches = 2):
+        data = matches[1].group()
+        jsondata = json.load(data)
+        return jsondata
+    else:
+        print "ERROR: matching error"
+
+def getScatterplotDataForMetricFromExperiment(subName, experiment, metric):
+    return []
+        
 
 def extractHistogramMetricFromExperiment (subName,expName,aMetric):
     ##Create an output file with the metric name.

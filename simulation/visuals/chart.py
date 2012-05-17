@@ -38,6 +38,14 @@ def getBenchmarksFromExperiments(request):
 ############################################################
 
 def index(request):
+    
+    metric = findOrCreateMetricByName('SampleAggregateMetric', True)
+#    metricAggregatesWithText = MetricAggregate.objects.filter(metric = metric);
+#    if len(metricAggregatesWithText) == 1:
+#        return metricAggregatesWithText[0]
+#    elif len(metricAggregatesWithText) == 0:
+#        metric = MetricAggregate.objects.create(metric = metric, metrictype='HISTOGRAM', isAggregate = aggregate)
+#        return metric
     #Set up default values to pass to index
     request.session["experiments"] = []
     chart_type = 'NOPLOT';
