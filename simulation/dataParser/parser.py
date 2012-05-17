@@ -79,7 +79,7 @@ def extractMetricFromExperimentAndEvalStatement(subName, expName, metric):
     for match in regex.finditer(evalString):
         if isHistogram:
             metricData = getHistogramDataForMetricFromExperiment(subName, experiment, match.group())
-        else
+        else:
             metricData = getScatterplotDataForMetricFromExperiment(subName, experiment, match.group())
         allMetricData.append(metricData)
     
@@ -87,8 +87,8 @@ def extractMetricFromExperimentAndEvalStatement(subName, expName, metric):
     numDataPoints = 0;
     if len(allMetricData) == 0:
         return
-    else numDataPoints = len(allMetricData[0])
-    replace(    str, old, new[, maxsplit])
+    else:
+        numDataPoints = len(allMetricData[0])
 
     for i in range(0, len):
         curEvalString = strip(evalString);
