@@ -21,10 +21,6 @@ def initTable(request):
     
     #Get current running experiment & jobs
     retDict = {'jobs' : CondorJob.objects.all()}
-    f = open(os.path.join(EXP_ROOT_DIR,"curExp"),'r')
-    curExp = f.readlines()
-    
-    if len(curExp) > 0 : retDict['expName'] = curExp[0]
     
     #Return
     c = Context(retDict)  

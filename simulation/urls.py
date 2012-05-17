@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     url(r'^config/getCondor$', 'condorManager.views.initTable'),
     url(r'^getTableUpdates/$', 'condorManager.views.updateTable'),
     url(r'^handleJobs/$', 'condorManager.views.handleJobs'),
+    url(r'^manualParse/$', 'visuals.metrics.manualParse'),
     #Url to read lines from a file
     url(r'^read/$', 'dataParser.parser.readFile'),
     url(r'^listExp/$','dataParser.parser.getExperimentList'),

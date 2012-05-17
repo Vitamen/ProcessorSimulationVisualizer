@@ -135,11 +135,6 @@ $("#accordion").tabs("#accordion div.pane", {
 //************************************************
 {% block content %}
 <section id="main" class="column">
-{% if curExp %}
-<h4 class="alert_info">
-{{curExp}} is currently running. Running a new experiment will delete previous jobs
-</h4>
-{% endif %}
 <form name="argForm" id="argForm" action="" method="post" enctype="multipart/form-data">
 	<article class="module width_full">
 	<div id="accordion">
@@ -229,8 +224,9 @@ $("#accordion").tabs("#accordion div.pane", {
 	<!-- end of pane article -->
 	<div class="spacer"></div>
 	<input type="submit" id="run" value="Run Experiment">
+	</form>
 </section>
-</form>
+
 
 <div class="darkenBackground" name="darkBackgroundLayer" id="darkBackgroundLayer"></div>
 <script type="text/javascript" language="javascript">

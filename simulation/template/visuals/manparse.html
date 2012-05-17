@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+//************************************************
+// Attach page-specific javascripts
+//************************************************
+
+{% block javascript %}
+
+{% endblock %}
+
+//************************************************
+// Javascripts to run on document ready
+//************************************************
+
+{% block onready %}
+
+{% endblock %}
+
+
+//************************************************
+// Breadcrumbs
+//************************************************
+{% block breadcrumbs %}
+
+{% endblock %}
+
+//************************************************
+// Config block contents
+//************************************************
+
+{% block content %}
+<section id="main" class="column">
+	<form name="argForm" id="argForm" action="" method="post">
+		<fieldset>
+				<label>Path to folder containing experiments to parse</label> 
+				<input type="text" name="dirName" id="dirName" value="" />
+		</fieldset>
+	</form>
+</section>
+{% endblock %}

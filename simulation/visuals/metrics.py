@@ -70,5 +70,10 @@ def updateMetricType(request):
         metric.save()
     return HttpResponse({}) 
 
+def manualParse(request):
+    t = loader.get_template("visuals/manparse.html")
+    c = Context()
+    return HttpResponse(t.render(c))
+
 def sepByComma(value):
     return [x.strip() for x in value.split(",")]
