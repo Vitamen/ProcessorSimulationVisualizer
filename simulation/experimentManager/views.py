@@ -51,9 +51,9 @@ def runExp(request):
     condorFile = generator.generate(request)
     
     #Start job and return success
-    condorFile = os.path.join(EXP_ROOT_DIR,"tmp","condor.sub")
-    manage = Manager()
-    manage.startJob(condorFile)
+    #condorFile = os.path.join(EXP_ROOT_DIR,"tmp","condor.sub")
+   # manage = Manager()
+   # manage.startJob(condorFile)
     return HttpResponse("Success!")
     
 #########################################################

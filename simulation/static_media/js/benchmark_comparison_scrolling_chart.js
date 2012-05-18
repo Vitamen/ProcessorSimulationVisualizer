@@ -17,6 +17,7 @@ var lowerStack = new Array();
 
 for (var exp_i = 0; exp_i < experiments.length; exp_i++) {
 	var data = datatest[experiments[exp_i]];
+	console.log(data)
 	var temp_data = [];
 	for (var i = 0; i < data.length; i++) {
 		var data_item = data[i];

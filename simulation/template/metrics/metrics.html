@@ -126,9 +126,43 @@ $("ul.topnav li span").click(function() { //When trigger is clicked...
 </table>
 </article>
 
-<article class="module width_3_quarter">
-	<header><h3 class="tabs_involved" id="contManager">Content Manager</h3>
-	
-</article>
+<section id="main" class="column">
+<form name="argForm" id="argForm" action="" method="post" enctype="multipart/form-data">
+	<article class="module width_full">
+	<div id="accordion">
+		<header>
+		<h2 class="current">Metric Aggregation</h2>
+		</header>
+		<div class="pane" style="display: block">
+
+			<!-- METRIC NAME -->
+			<fieldset>
+				<label>Metric Name</label>
+				<input type="text" size="182" name="metricName" value="">		
+			</fieldset>
+			<!-- END METRIC NAME -->
+			
+			<!-- METRIC TYPE -->
+			<fieldset>
+				<label>Metric Type</label> <select id="bench" name="metricType">
+					<option value="HISTOGRAM">Histogram</option>
+					<option value="SCATTERPLOT">Scatter Plot</option>
+				</select>
+			</fieldset>
+			<!-- END BENCHMARK SUITES -->
+			
+			<!-- EVAL STRING -->
+			<fieldset>
+				<label>Eval String</label>
+				<textarea cols="50" rows="4" name="evalString"></textarea>	
+			</fieldset>
+			<!-- EVAL STRING -->
+		</div>
+	</div>
+	<div class="spacer"></div>
+	<input type="submit" id="run" value="Create Metric Aggregate">
+	</form>
+</section>
+
 
 {% endblock %}

@@ -181,13 +181,12 @@ def findArgument(retVal):
 # Save experiment to database
 ###############################################################
 def saveExperiment(request, curexpName, fileName, curArg):
-    experiment = Experiments(submissionName=request.POST['expName'],
-                             subdate = datetime.datetime.now(),
-                             expName = curexpName,
-                             binrev = fileName,
-                             bsuite = BenchmarkSuite.objects.get(suite=request.POST['benchsuite']),
-                             argset = curArg
-                                         )
+    experiment = Experiments.get_or_create(submissionName = request.POST['expName'], expName = curexpName)
+    experiment.subdate = datetime.datetimenow()
+    experiment.binrev = fileName
+    experiment.bsuite = BenchmarkSuite.objects.get(suite=request.POST['benchsuite'])
+    experiment.argset = curArg
+    experiment.rootDirectory = os.path.join(EXP_ROOT_DIR, request.POST['expName'], curexpName)
     experiment.save()
     exclBench = sepByComma(request.POST['as_values_1'])
     for bench in exclBench:
