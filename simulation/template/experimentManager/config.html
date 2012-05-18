@@ -40,7 +40,7 @@
 	var baseExpList = new Array();
 	var tmp;
 	{% for cur in baseExp %}
-		tmp = {value: "{{ cur }}", name: "{{ cur }}"};
+		tmp = {value: "{{ cur.name }}", name: "{{ cur.name }}"};
 		baseExpList.push(tmp);		
 	{% endfor %}
 	var expData = {items : baseExpList};
@@ -56,7 +56,7 @@
 	var extExpList = new Array();
 	var tmp;
 	{% for cur in extExp %}
-		tmp = {value: "{{ cur }}", name: "{{ cur }}"};
+		tmp = {value: "{{ cur.name }}", name: "{{ cur.name }}"};
 		extExpList.push(tmp);		
 	{% endfor %}
 	var extData = {items : extExpList};
@@ -212,11 +212,6 @@ $("#accordion").tabs("#accordion div.pane", {
 			<fieldset>
 				<label> Benchmarks to Exclude </label>
 				<input type="text" id="excl_bench" name="excl_bench">
-			</fieldset>
-			
-			<fieldset>
-			<label> pcm options </label>
-				<input type="text" id="pcm_options" name="pcm_options" value="-mem_multiplier 16">
 			</fieldset>
 		</div>
 	</div>
