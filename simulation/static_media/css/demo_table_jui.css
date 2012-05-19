@@ -526,7 +526,7 @@ fieldset select {
 }
 
 fieldset input[type="text"] {
-	width: auto;
+	width: 93%;
 	display : inline;
 	margin-right : 10px;
 	

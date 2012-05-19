@@ -11,13 +11,12 @@ import os.path
 def getBenchmarksFromExperiments(request):
     experiments = getExperiments(request)
     benchmarkMap = {}
-    for experiment in experiments:
-        print experiment
-        
+    for experiment in experiments: 
         #Get experiments benchmarks
         experimentBenchmarks = parser.extractBenchmarksFromExperiments(experiment[0], experiment[1])
-        print len(experimentBenchmarks)
-        for benchmark in experimentBenchmarks:
+        for experimentBenchmark in experimentBenchmarks:
+            benchmark = experimentBenchmark.benchmark
+            print benchmark.name
             if benchmark.name in benchmarkMap:
                 benchmarkMap[benchmark.name] = benchmarkMap[benchmark.name]+1
             else:
@@ -38,6 +37,14 @@ def getBenchmarksFromExperiments(request):
 ############################################################
 
 def index(request):
+    
+    metric = findOrCreateMetricByName('SampleAggregateMetric', True)
+#    metricAggregatesWithText = MetricAggregate.objects.filter(metric = metric);
+#    if len(metricAggregatesWithText) == 1:
+#        return metricAggregatesWithText[0]
+#    elif len(metricAggregatesWithText) == 0:
+#        metric = MetricAggregate.objects.create(metric = metric, metrictype='HISTOGRAM', isAggregate = aggregate)
+#        return metric
     #Set up default values to pass to index
     request.session["experiments"] = []
     chart_type = 'NOPLOT';
@@ -61,6 +68,9 @@ def index(request):
         # parse metrics as necessary
         for i in range(0, len(experiments_selected)):
             experiment = experiments_selected[i]
+            print "subName:" +experiment[0]+";"
+            print "expName:"+experiment[1]+";"
+            print "metric:"+metric+";"
             parser.extractMetricFromExperiment(experiment[0], experiment[1],metric)
             
             

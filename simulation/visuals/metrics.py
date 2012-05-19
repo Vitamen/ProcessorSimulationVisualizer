@@ -1,9 +1,24 @@
 from django.template import Context, loader
 from django.http import HttpResponse
 from simulation.experimentManager.models import *
-from simulation.dataParser.parser import parseExperiment, extractMetricFromExperiment
+from simulation.dataParser.parser import *
+from simulation.experimentManager.models import *
+import os
 
 def index(request):
+    if request.method == 'POST':
+        metricName = request.POST['metricName']
+        metricType = request.POST['metricType']
+        evalString = request.POST['evalString']
+        metric, created = Metric.objects.get_or_create(metricname = metricName);
+        metric.metrictype = metricType;
+        metric.isAggregate = True;
+        metric.save()
+    
+        metricAggregate, created = MetricAggregate.objects.get_or_create(metric = metric)
+        metricAggregate.evalString = evalString
+        metricAggregate.save()
+
     t = loader.get_template('metrics/metrics.html')
     metric_objects = Metric.objects.all()
     metrics = []
@@ -18,29 +33,24 @@ def index(request):
 
 def getMetricsOfTypeForExperiments(request):
     #Get submission name and experiment name needed
-    expName = request.POST['expName'][:-1]
-    expName = sepByComma(expName)
+    experiments = request.POST['expName'][:-1]
+    experiments = sepByComma(experiments)
     subName = request.POST['subName'][:-1]
     subName = sepByComma(subName)
-    print "got experiments"
-    print expName, subName
     
     #Get metric type
     metricType = request.POST.get('metric_type')
-    print "of type: "+ metricType
     metricMap = {}
     
     #Iterate through all selected experiments
-    for i in range(0, len(expName)):
+    for i in range(0, len(experiments)):
         #Use parser to parse selected experiment
         curSub = subName[i]
-        curExp = expName[i]
+        curExp = experiments[i]
         experiment_object = Experiments.objects.get(submissionName=curSub, expName=curExp)
-        parseExperiment(curSub,curExp, metricType)
         
         #Get out metrics this experiment
         experimentMetric_objects = ExperimentMetric.objects.filter(expname=experiment_object.pk, metricname__metrictype=metricType)
-        print len(experimentMetric_objects)
         for experimentMetric in experimentMetric_objects:
             metric = experimentMetric.metricname
             if metric in metricMap:
@@ -49,13 +59,14 @@ def getMetricsOfTypeForExperiments(request):
                 metricMap[metric] = 1 
     
     metrics = [];
-    experimentCount = len(expName)
+    experimentCount = len(experiments)
     for metric in metricMap:
         if metricMap[metric] == experimentCount:
             metrics.append(metric.metricname)
-    
     #if len(experiments) == 0 :
     #    metrics = []
+    metrics.append("core_bp_all_and_core_bp_all_misp")
+    metrics = sorted(metrics)
     c = Context({
         'metrics': metrics
     })
@@ -71,6 +82,18 @@ def updateMetricType(request):
     return HttpResponse({}) 
 
 def manualParse(request):
+    #Get values of POST
+    if request.method == 'POST':
+        subName = request.POST['subName']
+        expName = request.POST['expName']
+
+        #Check that the folders exist and parse experiment
+        pathCheck = os.path.join(subName,expName)
+        if not os.path.exists(pathCheck):
+            print "ERROR: path does not exist"
+            return
+        
+        parseExperimentWithRootDirectory(pathCheck)
     t = loader.get_template("visuals/manparse.html")
     c = Context()
     return HttpResponse(t.render(c))

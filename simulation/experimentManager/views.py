@@ -4,7 +4,7 @@ from simulation.condorManager.CondorManager import Manager
 from simulation.condorManager.models import CondorJob
 from simulation.settings import EXP_ROOT_DIR
 from datetime import datetime
-from simulation.experimentManager.models import *
+from models import *
 import re, os, generator, sys
 from django.core import serializers
 
@@ -51,9 +51,9 @@ def runExp(request):
     condorFile = generator.generate(request)
     
     #Start job and return success
-    #condorFile = os.path.join(EXP_ROOT_DIR,"tmp","condor.sub")
-   # manage = Manager()
-   # manage.startJob(condorFile)
+    condorFile = os.path.join(EXP_ROOT_DIR,"tmp","condor.sub")
+    manage = Manager()
+    manage.startJob(condorFile)
     return HttpResponse("Success!")
     
 #########################################################
@@ -77,6 +77,7 @@ def setDefault(request):
     baseExp = DefaultValues.objects.filter(name="baseExp")
     extExp = DefaultValues.objects.filter(name="extExp")
     
+    print >>sys.stderr, common
     if len(common) == 0: 
         common = DefaultValues(name="common", value="null")
         common.save()
@@ -98,7 +99,7 @@ def setDefault(request):
     else:
         baseExp = baseExp[0]
     if len(extExp) == 0:
-        extExp = DefaultValues(name="extExp", value="effra_overlap0.5 : -core_ra_efficient true -core_ra_efficient_overlap_T 0.5")
+        extExp = DefaultValues(name="extExp", value="effra_overlap0.5 : eff-core_ra_efficient true -core_ra_efficient_overlap_T 0.5")
         extExp.save()
     else:
         extExp = extExp[0]
@@ -116,34 +117,30 @@ def setDefault(request):
 # Update default values
 #########################################################
 def updateDefault(request):
-    #If the request is a GET with no POST value, return setDefault page
+    #If this is a refresh, simply return the page
     if len(request.POST) == 0 : return setDefault(request)
     
-    #Update values in the database
+    #update values in the database for default values
     retDict = updateValues(request)
     
-    #Delete old models for base and extended exp and replace
-    #with new values
-    if 'baseExp' in request.POST and 'extExp' in request.POST:
-        BaseExperiment.objects.all().delete()
-        ExtExperiment.objects.all().delete()
-        parseBaseAndExt(request.POST['baseExp'], 'base')
-        parseBaseAndExt(request.POST['extExp'], 'ext')
-    
-    #Return with updated values
+    #Clear models for base and extended experiment and
+    #insert new ones
+    BaseExperiment.objects.all().delete()
+    ExtExperiment.objects.all().delete()
+    parseBaseAndExt(request.POST['baseExp'], 'base')
+    parseBaseAndExt(request.POST['extExp'], 'ext')
     c = Context(retDict)  
     t = loader.get_template("experimentManager/setDefault.html")
     return HttpResponse(t.render(c))
 
 #########################################################
-# Helper function to update values in the dictionary
+# Update values from database
 #########################################################
 def updateValues(request):
     postMap = request.POST
     retDict = {}
     for key in postMap:
         curArg = postMap[key].strip()
-        if curArg == "" : continue
         databaseArg = DefaultValues.objects.get(name=key)
         databaseArg.value = curArg
         databaseArg.save()
@@ -151,15 +148,13 @@ def updateValues(request):
     return retDict
 
 #########################################################
-# Parse the experiments into model values and store in
-# the database
+# Update values in database
 #########################################################
 def parseBaseAndExt(exp, expType):
     lines = exp.split("\n")
     for line in lines:
         if line == "" : continue
         curArgs = line.split(" : ")
-        print >>sys.stderr, curArgs
         if expType == "base":
             curBase = BaseExperiment(name=curArgs[0], value=curArgs[1])
             curBase.save()

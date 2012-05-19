@@ -125,7 +125,7 @@ def makeCondorSub(request, fileName, dirName):
                 for bmark in bmarks:
                     if bmark.name not in exclBench:
                         f.write('Arguments = ' + bsuite + " " + bmark.name + " " + dirName
-                                    + " " + curExpDir + " " + fileName + " " + curArg + "\n")
+                                    + " " + curExpDir + " " + fileName + " " + curArg)
                         f.write("Queue\n")
                         f.write("\n")
                         bFolder = curExpDir + os.sep + bmark.name
@@ -180,13 +180,14 @@ def findArgument(retVal):
 # Save experiment to database
 ###############################################################
 def saveExperiment(request, curexpName, fileName, curArg):
-    experiment = Experiments.get_or_create(submissionName = request.POST['expName'], expName = curexpName)
-    experiment.subdate = datetime.datetimenow()
+    experiment = Experiments(submissionName = request.POST['expName'], expName = curexpName)
+    experiment.subdate = datetime.datetime.now()
     experiment.binrev = fileName
     experiment.bsuite = BenchmarkSuite.objects.get(suite=request.POST['benchsuite'])
     experiment.argset = curArg
     experiment.rootDirectory = os.path.join(EXP_ROOT_DIR, request.POST['expName'], curexpName)
     experiment.save()
+    print >>sys.stderr, experiment
     exclBench = sepByComma(request.POST['as_values_1'])
     for bench in exclBench:
         if bench != "": 
@@ -204,13 +205,13 @@ def convertTypeToArgs(baseArgs, size, expType):
     #Get model for base experiment types
     baseModel = BaseExperiment.objects.get(name=expType)
     args = args + baseModel.value
-    args = args + " "
     return args
 
 ###############################################################
 # Add experimental extensions
 ###############################################################
 def addExtensions(args, extType):
+    args = args + " "
     extModel = ExtExperiment.objects.get(name=extType)
     args = args + extModel.value
     return args

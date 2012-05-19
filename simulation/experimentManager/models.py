@@ -43,7 +43,7 @@ class Experiments(models.Model):
 class BaseExperiment(models.Model):
     name = models.CharField(max_length=200)
     value = models.CharField(max_length=1000)
-    
+
 class ExtExperiment(models.Model):
     name = models.CharField(max_length=200)
     value = models.CharField(max_length=1000)
