@@ -5,7 +5,12 @@ from simulation.condorManager.models import CondorJob
     Populate list of condorJobs with jobs
 '''
 def populateJobs(msg):
-    #Check and cut message to relevant part
+    #Check if msg is in the right format
+    try: 
+        float(msg)
+        return
+    except ValueError: 
+        pass
     if len(msg) == 0: return
     
     #Go through each line, create a job for each line and populate
@@ -55,9 +60,17 @@ def updateStopJob(myId):
     update
 '''
 def checkUpdate(msg):
-    #Process the current status message into dictionaries
     curJobs = {}
+    
+    #Check if msg is in the right format.
+    try: 
+        float(msg)
+        return []
+    except ValueError: 
+        pass
     if len(msg) == 0: return
+    
+    #Process the current status message into dictionaries
     lines = __processMsg(msg)
     for line in lines:
         splitVal = shlex.split(line)

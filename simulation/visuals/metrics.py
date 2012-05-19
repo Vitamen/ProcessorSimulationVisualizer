@@ -48,6 +48,7 @@ def getMetricsOfTypeForExperiments(request):
         curSub = subName[i]
         curExp = experiments[i]
         experiment_object = Experiments.objects.get(submissionName=curSub, expName=curExp)
+        parseExperiment(curSub,curExp)
         
         #Get out metrics this experiment
         experimentMetric_objects = ExperimentMetric.objects.filter(expname=experiment_object.pk, metricname__metrictype=metricType)
@@ -60,12 +61,18 @@ def getMetricsOfTypeForExperiments(request):
     
     metrics = [];
     experimentCount = len(experiments)
+    print experimentCount
     for metric in metricMap:
         if metricMap[metric] == experimentCount:
             metrics.append(metric.metricname)
-    #if len(experiments) == 0 :
-    #    metrics = []
-    metrics.append("core_bp_all_and_core_bp_all_misp")
+            
+    #Add additional aggregate metrics
+    metric_objects = Metric.objects.filter(isAggregate=True)
+    print metric_objects
+    for metric in metric_objects:
+        print metric
+        metrics.append(metric.metricname)
+
     metrics = sorted(metrics)
     c = Context({
         'metrics': metrics

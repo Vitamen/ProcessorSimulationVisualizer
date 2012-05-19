@@ -49,7 +49,7 @@ def runExp(request):
     #Use the generator to generate condor.sub and setup
     #relevant directories
     condorFile = generator.generate(request)
-    
+
     #Start job and return success
     condorFile = os.path.join(EXP_ROOT_DIR,"tmp","condor.sub")
     manage = Manager()

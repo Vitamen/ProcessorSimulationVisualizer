@@ -15,12 +15,12 @@ def getBenchmarksFromExperiments(request):
         #Get experiments benchmarks
         experimentBenchmarks = parser.extractBenchmarksFromExperiments(experiment[0], experiment[1])
         for experimentBenchmark in experimentBenchmarks:
-            benchmark = experimentBenchmark.benchmark
-            print benchmark.name
-            if benchmark.name in benchmarkMap:
-                benchmarkMap[benchmark.name] = benchmarkMap[benchmark.name]+1
+            benchmark = experimentBenchmark.name
+            print benchmark
+            if benchmark in benchmarkMap:
+                benchmarkMap[benchmark] = benchmarkMap[benchmark]+1
             else:
-                benchmarkMap[benchmark.name] = 1
+                benchmarkMap[benchmark] = 1
         
     benchmarks = [];
     experimentCount = len(experiments)

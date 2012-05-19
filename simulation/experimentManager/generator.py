@@ -125,7 +125,7 @@ def makeCondorSub(request, fileName, dirName):
                 for bmark in bmarks:
                     if bmark.name not in exclBench:
                         f.write('Arguments = ' + bsuite + " " + bmark.name + " " + dirName
-                                    + " " + curExpDir + " " + fileName + " " + curArg)
+                                    + " " + curExpDir + " " + fileName + " " + curArg + "\n")
                         f.write("Queue\n")
                         f.write("\n")
                         bFolder = curExpDir + os.sep + bmark.name
@@ -185,7 +185,7 @@ def saveExperiment(request, curexpName, fileName, curArg):
     experiment.binrev = fileName
     experiment.bsuite = BenchmarkSuite.objects.get(suite=request.POST['benchsuite'])
     experiment.argset = curArg
-    experiment.rootDirectory = os.path.join(EXP_ROOT_DIR, request.POST['expName'], curexpName)
+    experiment.rootDirectory = os.path.join(EXP_ROOT_DIR, request.POST['expName'], "data", curexpName)
     experiment.save()
     print >>sys.stderr, experiment
     exclBench = sepByComma(request.POST['as_values_1'])

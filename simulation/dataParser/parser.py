@@ -1,7 +1,7 @@
 import json
 import os.path
 import subprocess
-from simulation.settings import  PROJECT_PATH, PARSE_ROOT_DIR
+from simulation.settings import  PROJECT_PATH, PARSE_ROOT_DIR, EXP_ROOT_DIR
 from simulation.experimentManager.models import *
 import re
 from django.core.exceptions import ObjectDoesNotExist
@@ -26,6 +26,33 @@ def getExperimentList(self):
 def parseExperiment (subName, curExpName):
     #Get current experiment object from databases
     experiment_object = Experiments.objects.get(submissionName=subName, expName=curExpName)
+    experiment_pk = experiment_object.pk
+    print EXP_ROOT_DIR, subName, curExpName
+    path = os.path.join(EXP_ROOT_DIR,subName,"data",curExpName)
+    
+    #Look for all the benchmarks
+    benchmarksProcess = subprocess.Popen("cd "+ path+"; ls;", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    benchFound = False
+    for line in benchmarksProcess.stdout.readlines():
+        #Extract Benchmark names
+        tokens = line.split(" ")
+        benchmarktoken = tokens[0].rstrip("\n")
+        benchPath = os.path.join(path,benchmarktoken)
+    
+        #Go through each possible benchmark file to get metric out
+        #Once a file with metric is found, extract and exit
+        metricsProcess = subprocess.Popen("cd "+benchPath+"; grep '' *", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        for line in metricsProcess.stdout.readlines():
+            tokens = line.split("\"")
+            if len(tokens) > 1:
+                benchFound = True
+                metricToken = tokens[1]
+                metric_object = findOrCreateMetricByName(metricToken)
+                matchingMetrics = ExperimentMetric.objects.filter(expname=experiment_pk, metricname=metricToken)
+                if len(matchingMetrics) == 0:
+                    experimentMetric_object = ExperimentMetric(expname=experiment_object, metricname=metric_object)
+                    experimentMetric_object.save()
+        if benchFound: break
 
 
 def parseExperimentWithRootDirectory (rootDirectory):
@@ -61,6 +88,7 @@ def parseExperimentWithRootDirectory (rootDirectory):
                         experimentMetric_object = ExperimentMetric(expname=experiment_object, metricname=metric_object)
                         experimentMetric_object.save()
             if benchFound: break
+            
 #######################################################
 
 def extractMetricFromExperiment (subName, expName, aMetric):      
@@ -76,7 +104,7 @@ def extractMetricFromExperiment (subName, expName, aMetric):
 #######################################################
 
 def extractMetricFromExperimentAndEvalStatement(subName, expName, evalMetricName):
-    experiment = Experiments.objects.get(expName = expName)
+    experiment = Experiments.objects.get(submissionName = subName, expName = expName)
     metric = Metric.objects.get(metricname = evalMetricName)
     metricAggregate = MetricAggregate.objects.get(metric = metric)
     evalString = metricAggregate.evalString
@@ -166,6 +194,7 @@ def extractHistogramMetricFromExperiment (subName,expName,aMetric):
     ##Grep for the given metric 
     experiment = Experiments.objects.get(submissionName = subName, expName = expName)
     path = experiment.rootDirectory
+    print 'cd \"'+ path + '\" ;' + 'grep -ris \\"'+ aMetric + '\\" *'
     grepRes = subprocess.Popen('cd \"'+ path + '\" ;' + 'grep -ris \\"'+ aMetric + '\\" *', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
    
     ## Open json object
@@ -223,12 +252,14 @@ def extractScatterplotMetricFromExperiment(subName, expName, aMetric):
 #######################################################
 
 def extractBenchmarksFromExperiments (subName,curExpName):
-    try:
-        experiment = Experiments.objects.get(submissionName = subName, expName = curExpName)
-    except:
-        return []
-    
-    retBenchMarks = ExperimentBenchmark.objects.filter(expName = experiment)
+    myPath = os.path.join(EXP_ROOT_DIR,subName,"data",curExpName)
+    retBenchMarks = []
+    benchmarksProcess = subprocess.Popen("cd "+ myPath+"; ls;", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in benchmarksProcess.stdout.readlines():
+        tokens = line.split(" ")
+        benchmarktoken = tokens[0].rstrip("\n")
+        benchmark_object = findOrCreateBenchmarkByName(benchmarktoken)
+        retBenchMarks.append(benchmark_object)
     return retBenchMarks
 
 #######################################################
